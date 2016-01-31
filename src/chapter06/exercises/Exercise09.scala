@@ -3,7 +3,8 @@ package chapter06.exercises
 import chapter06.RNG.{Rand, flatMap, unit}
 
 /**
-  * Created by dipstef on 31/01/2016.
+  * Reimplement map and map2 in terms of flatMap. The fact that this is possible is what we’re referring to when we say
+    that flatMap is more powerful than map and map2
   */
 object Exercise09 {
   def map[A, B](s: Rand[A])(f: A => B): Rand[B] = flatMap(s)(a => unit(f(a)))
