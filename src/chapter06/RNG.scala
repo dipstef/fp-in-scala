@@ -80,4 +80,8 @@ object RNG {
   val randDoubleInt: Rand[(Double, Int)] = both(double, int)
 
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = Exercise07.sequence(fs)
+
+  def ints(count: Int): Rand[List[Int]] = Exercise07.ints(count)
+
+  def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] = Exercise08.flatMap(f)(g)
 }
