@@ -1,6 +1,6 @@
 package chapter06
 
-import chapter06.exercises.{Exercise03, Exercise01, Exercise02}
+import chapter06.exercises.{Exercise04, Exercise03, Exercise01, Exercise02}
 
 
 trait RNG {
@@ -32,6 +32,7 @@ object RNG {
 
     def double3(rng: RNG): ((Double,Double,Double), RNG) = Exercise03.double3(rng)
 
+    def ints(count: Int)(rng: RNG): (List[Int], RNG) = Exercise04.ints(count)(rng)
 
   }
 }
