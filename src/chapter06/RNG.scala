@@ -1,6 +1,6 @@
-package chapter06.material
+package chapter06
 
-import chapter06.exercises.{Exercise02, Exercise01}
+import chapter06.exercises.{Exercise03, Exercise01, Exercise02}
 
 
 trait RNG {
@@ -9,6 +9,7 @@ trait RNG {
 
 
 object RNG {
+
   case class SimpleRNG(seed: Long) extends RNG {
     def nextInt: (Int, RNG) = {
       // `&` is bitwise AND. We use the current seed to generate a new seed.
@@ -25,10 +26,12 @@ object RNG {
 
     def double(rng: RNG): (Double, RNG) = Exercise02.double(rng)
 
+    def intDouble(rng: RNG): ((Int,Double), RNG) = Exercise03.intDouble(rng)
+
+    def doubleInt(rng: RNG): ((Double,Int), RNG) = Exercise03.doubleInt(rng)
+
+    def double3(rng: RNG): ((Double,Double,Double), RNG) = Exercise03.double3(rng)
+
 
   }
-}
-
-class State {
-
 }

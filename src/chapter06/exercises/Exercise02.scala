@@ -1,7 +1,7 @@
 package chapter06.exercises
 
-import chapter06.material.RNG
-import chapter06.material.RNG.SimpleRNG
+import chapter06.RNG
+import RNG.SimpleRNG
 
 /**
   * Write a function to generate a Double between 0 and 1, not including 1. Note: You can use Int.MaxValue to obtain the

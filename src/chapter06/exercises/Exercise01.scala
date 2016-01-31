@@ -1,12 +1,12 @@
 package chapter06.exercises
 
-import chapter06.material.RNG
-import chapter06.material.RNG.SimpleRNG
+import chapter06.RNG
+import RNG.SimpleRNG
 
 /**
-  Write a function that uses RNG.nextInt to generate a random integer between 0 and Int.maxValue (inclusive).
-  Make sure to handle the corner case when nextInt returns Int.MinValue, which doesn’t have a non-negative
-  counterpart.
+  *Write a function that uses RNG.nextInt to generate a random integer between 0 and Int.maxValue (inclusive).
+  *Make sure to handle the corner case when nextInt returns Int.MinValue, which doesn’t have a non-negative
+  *counterpart.
   */
 
 object Exercise01 {
