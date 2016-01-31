@@ -1,6 +1,7 @@
 package chapter06.exercises
 
 import chapter06.RNG
+import chapter06.exercises.Exercise01.nonNegativeInt
 import RNG.SimpleRNG
 
 /**
@@ -10,7 +11,7 @@ import RNG.SimpleRNG
 object Exercise02 {
 
   def double(rng: RNG): (Double, RNG) = {
-    val (i, r) = rng.nextInt
+    val (i, r) = nonNegativeInt(rng)
     (i / (Integer.MAX_VALUE.toDouble + 1), r)
   }
 
