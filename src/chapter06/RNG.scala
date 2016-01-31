@@ -65,10 +65,19 @@ object RNG {
   // Exercise 5
   def double = Exercise05.double
 
-  /* Unfortunately, map isn’t powerful enough to implement intDouble and doubleInt from exercise 3.
-     What we need is a new combinator map2 that can combine two RNG actions into one using a binary rather than unary
-     function */
-
+  // Unfortunately, map isn’t powerful enough to implement intDouble and doubleInt from exercise 3.
+  // What we need is a new combinator map2 that can combine two RNG actions into one using a binary rather than unary
+  // function
   def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = Exercise06.map2(ra, rb)(f)
 
+  // We only have to write the map2 combinator once, and then we can use it to combine arbitrary RNG state actions
+
+  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
+
+  // We can use this to reimplement intDouble and doubleInt from exercise 6.3 more succinctly
+
+  val randIntDouble: Rand[(Int, Double)] = both(int, double)
+  val randDoubleInt: Rand[(Double, Int)] = both(double, int)
+
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = Exercise07.sequence(fs)
 }

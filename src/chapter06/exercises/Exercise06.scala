@@ -2,8 +2,10 @@ package chapter06.exercises
 
 import chapter06.RNG.Rand
 
-// Write the implementation of map2 based on the following signature. This function takes two actions, ra and rb,
-// and a function f for combining their results, and returns a new action that combines them
+/**
+  * Write the implementation of map2 based on the following signature. This function takes two actions, ra and rb,
+  * and a function f for combining their results, and returns a new action that combines them
+  */
 
 
 object Exercise06 {
