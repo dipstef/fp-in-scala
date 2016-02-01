@@ -1,6 +1,6 @@
 package chapter06
 
-import chapter06.State._
+import chapter06.State.{sequence, get, modify}
 
 
 /** From Exercise 11 */
