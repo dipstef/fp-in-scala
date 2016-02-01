@@ -80,6 +80,8 @@ object RNG {
 
   def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] = Exercise08.flatMap(f)(g)
 
+  def nonNegativeLessThan(n: Int): Rand[Int] = Exercise08.nonNegativeLessThan(n)
+
   def map[A,B](s: Rand[A])(f: A => B): Rand[B] = Exercise09.map(s)(f)
 
   def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = Exercise09.map2(ra, rb)(f)
