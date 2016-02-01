@@ -7,11 +7,6 @@ trait RNG {
   def nextInt: (Int, RNG) // Should generate a random `Int`. We'll later define other functions in terms of `nextInt`.
 }
 
-class ARNG {
-  type Rand[+A] = RNG => (A, RNG)
-
-}
-
 object RNG {
 
   case class SimpleRNG(seed: Long) extends RNG {
@@ -53,14 +48,14 @@ object RNG {
 
   // transforming the output of a state action without modifying the state itself.
   // Rand[A] is  a type alias for a function type RNG => (A, RNG), so this is just a kind of function composition
-  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
+  def _map[A, B](s: Rand[A])(f: A => B): Rand[B] =
     rng => {
       val (a, rng2) = s(rng)
       (f(a), rng2)
     }
 
   // Example on how to use map
-  def nonNegativeEven: Rand[Int] = map(nonNegativeInt)(i => i - i % 2)
+  def nonNegativeEven: Rand[Int] = _map(nonNegativeInt)(i => i - i % 2)
 
   // Exercise 5
   def double = Exercise05.double
@@ -68,11 +63,11 @@ object RNG {
   // Unfortunately, map isn’t powerful enough to implement intDouble and doubleInt from exercise 3.
   // What we need is a new combinator map2 that can combine two RNG actions into one using a binary rather than unary
   // function
-  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = Exercise06.map2(ra, rb)(f)
+  def _map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = Exercise06.map2(ra, rb)(f)
 
   // We only have to write the map2 combinator once, and then we can use it to combine arbitrary RNG state actions
 
-  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
+  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = _map2(ra, rb)((_, _))
 
   // We can use this to reimplement intDouble and doubleInt from exercise 6.3 more succinctly
 
