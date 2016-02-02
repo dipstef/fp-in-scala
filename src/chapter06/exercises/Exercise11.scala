@@ -52,12 +52,13 @@ object Exercise11 {
   import CandyMachine._
 
   def main(args: Array[String]) {
-    val machine = Machine(locked = true, candies = 12, coins = 0)
 
-    val unlocked: Machine = update(Coin)(machine)
-    println("update(Coin)(%s) = %s".format(machine, unlocked))
+    assert(update(Coin)(Machine(locked = true, candies = 12, coins = 0)) ==
+                        Machine(locked = false, candies = 12, coins = 1))
 
-    println("update(Turn)(%s) = %s".format(unlocked, update(Turn)(unlocked)))
+    assert(update(Turn)(Machine(locked = false, candies = 12, coins= 1)) ==
+                        Machine(locked=true, candies = 11, coins = 1))
+
 
   }
 

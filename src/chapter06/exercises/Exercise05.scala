@@ -7,8 +7,6 @@ import chapter06.RNG.{Rand, SimpleRNG, map, nonNegativeInt}
   */
 object Exercise05 {
 
-
-  // Exercise 5
   def double: Rand[Double] = {
     map(nonNegativeInt)(i => i / (Integer.MAX_VALUE.toDouble + 1))
   }
