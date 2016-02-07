@@ -10,9 +10,9 @@ abstract class ParallelSum extends ParallelComputation {
       val (l, r) = ints.splitAt(ints.length / 2)
       val sumL: Par[Int] = unit(sumSequential(l))
       val sumR: Par[Int] = unit(sumSequential(r))
-      // This actually should avoided as get forces the side effects to happen, and as such we can't combine
+      // This actually should avoided as run forces the side effects to happen, and as such we can't combine
       // parallel computations, as in this case get(sumL) will block before we can call get(sumR)
-      get(sumL) + get(sumR)
+      run(sumL) + run(sumR)
     }
 
   // Because map2 is strict, and Scala evaluates arguments left to right, whenever we encounter map2(sum(x),sum(y))(_ + _),
@@ -42,8 +42,12 @@ abstract class ParallelSum extends ParallelComputation {
   // off a separate logical thread to evaluate them:
   // our API doesn’t give us any way of providing this sort of information: is very inexplicit about when computations
   // get forked off the main thread—the programmer doesn’t get to specify where this forking should occur.
+
   // We can make that explicit by defining: fork[A](a: => Par[A]): Par[A], which we can take to mean that the given Par
-  // should be run in a separate logical thread:”
+  // should be run in a separate logical thread:
+
+  // fork solves the problem of instantiating our parallel computations too strictly, but more fundamentally it puts the
+  // parallelism explicitly under programmer control.
 
   def sum(ints: IndexedSeq[Int]): Par[Int] =
     if (ints.size <= 1)
