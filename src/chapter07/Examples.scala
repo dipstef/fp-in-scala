@@ -1,17 +1,6 @@
 package chapter07
 
 
-trait ParallelComputation {
-  type Par[A]
-
-  def unit[A](a: => A): Par[A]
-
-  def get[A](a: Par[A]): A
-
-  def map2[A,B,C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C]
-
-}
-
 abstract class ParallelSum extends ParallelComputation {
 
   def sumSequential(ints: IndexedSeq[Int]): Int =
@@ -31,16 +20,41 @@ abstract class ParallelSum extends ParallelComputation {
   // This has as consequence that we’ll strictly construct the entire left half of the tree of summations first before
   // moving on to (strictly) constructing the right half
 
+  def _sum(ints: IndexedSeq[Int]): Par[Int] =
+    if (ints.size <= 1)
+      unit(ints.headOption getOrElse 0)
+    else {
+      val (l, r) = ints.splitAt(ints.length / 2)
+
+      map2(_sum(l), _sum(r))(_ + _)
+    }
+
+  // Having map2 don't have it begin execution immediately implies a Par value is merely construction a description
+  // of what needs to to be computed in parallel. Nothing happens until get is called.
+  // The problem is that by constructing descriptions strictly, they'll be rather heavyweight objects, and occupy
+  // much more space than the original list it self.
+  // We should make map2 lazy and have it begin immediate execution of both sides in parallel.
+  // This also addresses the problem of giving neither side priority over the other.
+
+
+  // map2(unit(1), unit(1))(_ + _):
+  // we know that the two computations we’re combining will execute so quickly that there isn’t much point in spawning
+  // off a separate logical thread to evaluate them:
+  // our API doesn’t give us any way of providing this sort of information: is very inexplicit about when computations
+  // get forked off the main thread—the programmer doesn’t get to specify where this forking should occur.
+  // We can make that explicit by defining: fork[A](a: => Par[A]): Par[A], which we can take to mean that the given Par
+  // should be run in a separate logical thread:”
+
   def sum(ints: IndexedSeq[Int]): Par[Int] =
     if (ints.size <= 1)
       unit(ints.headOption getOrElse 0)
     else {
       val (l, r) = ints.splitAt(ints.length / 2)
 
-      map2(sum(l), sum(r))(_+_)
+      map2(fork(sum(l)), fork(sum(r)))(_+_)
     }
-
 }
+
 
 object Examples {
 
