@@ -7,16 +7,22 @@ trait ParallelComputation {
 
   type Par[A]
 
+  // promotes a constant value to a parallel computation.
   def unit[A](a: => A): Par[A]
 
-  def run[A](a: Par[A]): A
-
+  // combines the results of two parallel computations with a binary function
   def map2[A,B,C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C]
 
+  // marks a computation for concurrent evaluation. The evaluation won’t actually occur until forced by run
   def fork[A](a: => Par[A]): Par[A]
 
-  // lazyUnit is a combinator, as opposed to a primitive combinator like unit. We can define lazyUnit in terms of other
-  // operations.
+  // derived combinator: wraps its unevaluated argument in a Par and marks it for concurrent evaluation
   def lazyUnit[A](a: => A): Par[A] = fork(unit(a))
 
+}
+
+
+trait ParallelComputationRun extends ParallelComputation{
+  // extracts a value from a Par by actually performing the computation
+  def run[A](a: Par[A]): A
 }

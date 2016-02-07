@@ -1,20 +1,21 @@
 package chapter07
 
 
-abstract class ParallelSum extends ParallelComputation {
-
-  def sumSequential(ints: IndexedSeq[Int]): Int =
+abstract class ParallSumSequential extends ParallelComputationRun {
+  def sum(ints: IndexedSeq[Int]): Int =
     if (ints.size <= 1)
       ints.headOption getOrElse 0
     else {
       val (l, r) = ints.splitAt(ints.length / 2)
-      val sumL: Par[Int] = unit(sumSequential(l))
-      val sumR: Par[Int] = unit(sumSequential(r))
+      val sumL: Par[Int] = unit(sum(l))
+      val sumR: Par[Int] = unit(sum(r))
       // This actually should avoided as run forces the side effects to happen, and as such we can't combine
       // parallel computations, as in this case get(sumL) will block before we can call get(sumR)
       run(sumL) + run(sumR)
     }
+}
 
+abstract class ParallelSumStrict extends ParallelComputation {
   // Because map2 is strict, and Scala evaluates arguments left to right, whenever we encounter map2(sum(x),sum(y))(_ + _),
   // we have to then evaluate sum(x) and so on recursively.
   // This has as consequence that we’ll strictly construct the entire left half of the tree of summations first before
@@ -28,6 +29,9 @@ abstract class ParallelSum extends ParallelComputation {
 
       map2(_sum(l), _sum(r))(_ + _)
     }
+}
+
+abstract class ParallelSum extends ParallelComputation {
 
   // Having map2 don't have it begin execution immediately implies a Par value is merely construction a description
   // of what needs to to be computed in parallel. Nothing happens until get is called.
@@ -55,7 +59,7 @@ abstract class ParallelSum extends ParallelComputation {
     else {
       val (l, r) = ints.splitAt(ints.length / 2)
 
-      map2(fork(sum(l)), fork(sum(r)))(_+_)
+      map2(fork(sum(l)), fork(sum(r)))(_ + _)
     }
 }
 
