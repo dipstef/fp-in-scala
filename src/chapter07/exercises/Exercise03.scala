@@ -27,17 +27,15 @@ case class Map2Future[A, B, C](a: Future[A],
 
   @volatile var cache: Option[C] = None
 
-  def isDone = cache.isDefined
+  override def isDone = cache.isDefined
 
-  def isCancelled = a.isCancelled || b.isCancelled
+  override def isCancelled = a.isCancelled || b.isCancelled
 
-  def cancel(evenIfRunning: Boolean) =
-    a.cancel(evenIfRunning) || b.cancel(evenIfRunning)
+  override def cancel(evenIfRunning: Boolean) = a.cancel(evenIfRunning) || b.cancel(evenIfRunning)
 
-  def get = compute(Long.MaxValue)
+  override def get = compute(Long.MaxValue)
 
-  def get(timeout: Long, units: TimeUnit): C =
-    compute(TimeUnit.NANOSECONDS.convert(timeout, units))
+  override def get(timeout: Long, units: TimeUnit): C = compute(TimeUnit.NANOSECONDS.convert(timeout, units))
 
   private def compute(timeoutInNanos: Long): C = cache match {
     case Some(c) => c
