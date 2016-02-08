@@ -1,9 +1,8 @@
 package chapter07
 
-import java.util.concurrent.{TimeUnit, Future, ExecutorService}
+import java.util.concurrent.{Callable, TimeUnit, Future, ExecutorService}
 
-
-object Par extends ParallelComputation{
+object Par extends ParallelComputation {
 
   override type Par[A] = ExecutorService => Future[A]
 
@@ -16,14 +15,35 @@ object Par extends ParallelComputation{
 
   private case class UnitFuture[A](get: A) extends Future[A] {
     def isDone = true
+
     def get(timeout: Long, units: TimeUnit) = get
+
     def isCancelled = false
+
     def cancel(evenIfRunning: Boolean): Boolean = false
   }
 
-  override def map2[A, B, C](a: Par.Par[A], b: Par.Par[B])(f: (A, B) => C): Par.Par[C] = ???
+  // `map2` doesn't evaluate the call to `f` in a separate logical thread, in accord with our design choice of having
+  // `fork` be the sole function in the API for controlling parallelism. We can always do `fork(map2(a,b)(f))`
+  // if we want the evaluation of `f` to occur in a separate thread.
+  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = (es: ExecutorService) => {
+    val af = a(es)
+    val bf = b(es)
+    // This implementation of `map2` does _not_ respect timeouts. It simply passes the `ExecutorService` on to both
+    // `Par` values, waits for the results of the Futures `af` and `bf`, applies `f` to them, and wraps them in a
+    // `UnitFuture`. In order to respect timeouts, we'd need a new `Future` implementation that records the amount of
+    // time spent evaluating `af`, then subtracts that time from the available time allocated for evaluating `bf`.
+    UnitFuture(f(af.get, bf.get))
+  }
 
-  override def fork[A](a: => Par.Par[A]): Par.Par[A] = ???
+  // This is the simplest and most natural implementation of `fork`, but there are some problems with it--for one,
+  // the outer `Callable` will block waiting for the "inner" task to complete. Since this blocking occupies a thread
+  // in our thread pool, or whatever resource backs the `ExecutorService`, this implies that we're losing out on some
+  // potential parallelism. Essentially, we're using two threads when one should suffice. This is a symptom of a more
+  // serious problem with the implementation, and we will discuss this later in the chapter.
+  def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {
+      def call = a(es).get
+    })
 
 
 }
