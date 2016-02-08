@@ -41,9 +41,6 @@ object Par extends ParallelComputation {
   // in our thread pool, or whatever resource backs the `ExecutorService`, this implies that we're losing out on some
   // potential parallelism. Essentially, we're using two threads when one should suffice. This is a symptom of a more
   // serious problem with the implementation, and we will discuss this later in the chapter.
-  def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {
-      def call = a(es).get
-    })
-
+  def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {def call = a(es).get})
 
 }
