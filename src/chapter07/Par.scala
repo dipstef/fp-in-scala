@@ -2,8 +2,7 @@ package chapter07
 
 import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 
-import chapter07.exercises.Exercise03
-import chapter07.exercises.Exercise04
+import chapter07.exercises.{Exercise03, Exercise04, Exercise05}
 
 object Par extends ParallelComputation {
 
@@ -55,8 +54,10 @@ object Par extends ParallelComputation {
   // returns a sorted result
   def sortPar(parList: Par[List[Int]]) = map(parList)(_.sorted)
 
-  def sequence[A](as: List[Par[A]]): Par[List[A]] = ???
+  // collects n parallel results
+  def sequence[A](as: List[Par[A]]): Par[List[A]] = Exercise05.sequence(as)
 
+  // parallel map
   def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = fork {
     val fbs: List[Par[B]] = ps.map(asyncF(f))
     sequence(fbs)
