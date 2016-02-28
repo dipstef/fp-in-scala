@@ -2,17 +2,15 @@ package chapter07.exercises
 
 import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 
-import chapter07.ParallelComputation
-
 /**
   * Before continuing, try to come up with representations for Par that make it possible to implement the functions of
   * our API.
   */
 object Exercise02 {
 
-  object Par extends ParallelComputation {
+  object Par {
 
-    override type Par[A] = ExecutorService => Future[A]
+    type Par[A] = ExecutorService => Future[A]
 
     def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
 

@@ -4,9 +4,9 @@ import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 
 import chapter07.exercises.{Exercise03, Exercise04, Exercise05}
 
-object Par extends ParallelComputation {
+object Par {
 
-  override type Par[A] = ExecutorService => Future[A]
+  type Par[A] = ExecutorService => Future[A]
 
   def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
 
@@ -36,6 +36,9 @@ object Par extends ParallelComputation {
   def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {
     def call = a(es).get
   })
+
+  // derived combinator: wraps its unevaluated argument in a Par and marks it for concurrent evaluation
+  def lazyUnit[A](a: => A): Par[A] = fork(unit(a))
 
   // trick to add infix syntax to any type using implicit conversions
   implicit def toParOps[A](p: Par[A]): ParOps[A] = new ParOps(p)
