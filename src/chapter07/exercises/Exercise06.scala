@@ -10,8 +10,7 @@ import chapter07.Par.{Par, asyncF, map, sequence}
 object Exercise06 {
 
   def parFilter[A](l: List[A])(f: A => Boolean): Par[List[A]] = {
-    val pars: List[Par[List[A]]] =
-      l map asyncF((a: A) => if (f(a)) List(a) else List())
+    val pars: List[Par[List[A]]] = l map asyncF((a: A) => if (f(a)) List(a) else List())
     // convenience method on `List` for concatenating a list of lists
     map(sequence(pars))(_.flatten)
   }
@@ -21,11 +20,9 @@ object Exercise06 {
     val pars: List[Par[(A, Boolean)]] = l map asyncF(a => (a, f(a)))
 
     map(sequence(pars))(_.filter(_._2).map(_._1))
-
   }
 
   def main(args: Array[String]) {
-
     val l = (1 to 10).toList
 
     printResult(parFilter(l)(_ % 2 == 0))
