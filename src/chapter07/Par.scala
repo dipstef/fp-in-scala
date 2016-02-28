@@ -28,16 +28,22 @@ object Par extends ParallelComputation {
     UnitFuture(f(af.get, bf.get))
   }
 
-
   // this version of map2 allows timeouts
-  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = Exercise03.map2 (a, b)(f)
+  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = Exercise03.map2(a, b)(f)
 
   // This is the simplest and most natural implementation of `fork`, but there are some problems with it--for one,
   // the outer `Callable` will block waiting for the "inner" task to complete. Since this blocking occupies a thread
   // in our thread pool, or whatever resource backs the `ExecutorService`, this implies that we're losing out on some
   // potential parallelism. Essentially, we're using two threads when one should suffice. This is a symptom of a more
   // serious problem with the implementation, and we will discuss this later in the chapter.
-  def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {def call = a(es).get})
+  def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {
+    def call = a(es).get
+  })
+
+  // trick to add infix syntax to any type using implicit conversions
+  implicit def toParOps[A](p: Par[A]): ParOps[A] = new ParOps(p)
+
+  class ParOps[A](p: Par[A]) {}
 
 }
 
