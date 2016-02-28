@@ -1,6 +1,8 @@
 package chapter07
 
-import java.util.concurrent.{Callable, TimeUnit, Future, ExecutorService}
+import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
+
+import chapter07.exercises.Exercise03
 
 object Par extends ParallelComputation {
 
@@ -26,7 +28,7 @@ object Par extends ParallelComputation {
   // `map2` doesn't evaluate the call to `f` in a separate logical thread, in accord with our design choice of having
   // `fork` be the sole function in the API for controlling parallelism. We can always do `fork(map2(a,b)(f))`
   // if we want the evaluation of `f` to occur in a separate thread.
-  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = (es: ExecutorService) => {
+  private def _map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = (es: ExecutorService) => {
     val af = a(es)
     val bf = b(es)
     // This implementation of `map2` does _not_ respect timeouts. It simply passes the `ExecutorService` on to both
@@ -35,6 +37,10 @@ object Par extends ParallelComputation {
     // time spent evaluating `af`, then subtracts that time from the available time allocated for evaluating `bf`.
     UnitFuture(f(af.get, bf.get))
   }
+
+
+  // this version of map2 allows timeouts
+  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = Exercise03.map2 (a, b)(f)
 
   // This is the simplest and most natural implementation of `fork`, but there are some problems with it--for one,
   // the outer `Callable` will block waiting for the "inner" task to complete. Since this blocking occupies a thread

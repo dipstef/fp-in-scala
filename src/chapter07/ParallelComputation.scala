@@ -5,7 +5,7 @@ trait ParallelComputation {
   // Par itself doesn’t need to know how to actually implement the parallelism. It’s more a description of a parallel
   // computation that gets interpreted at a later time
 
-  type Par[A]
+  abstract type Par[A]
 
   // promotes a constant value to a parallel computation.
   def unit[A](a: => A): Par[A]
