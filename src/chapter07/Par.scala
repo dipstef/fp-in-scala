@@ -3,6 +3,7 @@ package chapter07
 import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 
 import chapter07.exercises.Exercise03
+import chapter07.exercises.Exercise04
 
 object Par extends ParallelComputation {
 
@@ -28,9 +29,6 @@ object Par extends ParallelComputation {
     UnitFuture(f(af.get, bf.get))
   }
 
-  // this version of map2 allows timeouts
-  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = Exercise03.map2(a, b)(f)
-
   // This is the simplest and most natural implementation of `fork`, but there are some problems with it--for one,
   // the outer `Callable` will block waiting for the "inner" task to complete. Since this blocking occupies a thread
   // in our thread pool, or whatever resource backs the `ExecutorService`, this implies that we're losing out on some
@@ -44,6 +42,25 @@ object Par extends ParallelComputation {
   implicit def toParOps[A](p: Par[A]): ParOps[A] = new ParOps(p)
 
   class ParOps[A](p: Par[A]) {}
+
+
+  // this version of map2 allows timeouts
+  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = Exercise03.map2(a, b)(f)
+
+  def asyncF[A, B](f: A => B): A => Par[B] = Exercise04.asyncF(f)
+
+  // map can be implemented in terms of map2, but not the other way around, just shows that map2 is strictly more powerful
+  def map[A, B](pa: Par[A])(f: A => B): Par[B] = map2(pa, unit(()))((a, _) => f(a))
+
+  // returns a sorted result
+  def sortPar(parList: Par[List[Int]]) = map(parList)(_.sorted)
+
+  def sequence[A](as: List[Par[A]]): Par[List[A]] = ???
+
+  def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = fork {
+    val fbs: List[Par[B]] = ps.map(asyncF(f))
+    sequence(fbs)
+  }
 
 }
 
