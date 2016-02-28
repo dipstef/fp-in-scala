@@ -15,16 +15,6 @@ object Par extends ParallelComputation {
   // It's always done and can't be cancelled. Its `get` method simply returns the value that we gave it.
   def unit[A](a: A): Par[A] = (es: ExecutorService) => UnitFuture(a)
 
-  private case class UnitFuture[A](get: A) extends Future[A] {
-    def isDone = true
-
-    def get(timeout: Long, units: TimeUnit) = get
-
-    def isCancelled = false
-
-    def cancel(evenIfRunning: Boolean): Boolean = false
-  }
-
   // `map2` doesn't evaluate the call to `f` in a separate logical thread, in accord with our design choice of having
   // `fork` be the sole function in the API for controlling parallelism. We can always do `fork(map2(a,b)(f))`
   // if we want the evaluation of `f` to occur in a separate thread.
@@ -50,3 +40,14 @@ object Par extends ParallelComputation {
   def fork[A](a: => Par[A]): Par[A] = es => es.submit(new Callable[A] {def call = a(es).get})
 
 }
+
+private case class UnitFuture[A](get: A) extends Future[A] {
+  def isDone = true
+
+  def get(timeout: Long, units: TimeUnit) = get
+
+  def isCancelled = false
+
+  def cancel(evenIfRunning: Boolean): Boolean = false
+}
+
