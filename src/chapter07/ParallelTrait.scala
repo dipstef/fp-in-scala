@@ -1,7 +1,7 @@
 package chapter07
 
 
-trait ParallelComputation {
+trait ParallelTrait {
   // Par itself doesn’t need to know how to actually implement the parallelism. It’s more a description of a parallel
   // computation that gets interpreted at a later time
 
@@ -19,10 +19,7 @@ trait ParallelComputation {
   // derived combinator: wraps its unevaluated argument in a Par and marks it for concurrent evaluation
   def lazyUnit[A](a: => A): Par[A] = fork(unit(a))
 
-}
-
-
-trait ParallelComputationRun extends ParallelComputation{
   // extracts a value from a Par by actually performing the computation
   def run[A](a: Par[A]): A
+
 }

@@ -14,7 +14,7 @@ object SumSequential {
 
 }
 
-abstract class ParallelSumSequential extends ParallelComputationRun {
+abstract class ParallelSumSequential extends ParallelTrait {
   def sum(ints: IndexedSeq[Int]): Int =
     if (ints.size <= 1)
       ints.headOption getOrElse 0
@@ -28,7 +28,7 @@ abstract class ParallelSumSequential extends ParallelComputationRun {
     }
 }
 
-abstract class ParallelSumStrict extends ParallelComputation {
+abstract class ParallelSumStrict extends ParallelTrait {
   // Because map2 is strict, and Scala evaluates arguments left to right, whenever we encounter map2(sum(x),sum(y))(_ + _),
   // we have to then evaluate sum(x) and so on recursively.
   // This has as consequence that we’ll strictly construct the entire left half of the tree of summations first before
@@ -44,7 +44,7 @@ abstract class ParallelSumStrict extends ParallelComputation {
     }
 }
 
-abstract class ParallelSum extends ParallelComputation {
+abstract class ParallelSum extends ParallelTrait {
 
   // Having map2 don't have it begin execution immediately implies a Par value is merely construction a description
   // of what needs to to be computed in parallel. Nothing happens until get is called.

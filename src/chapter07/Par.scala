@@ -67,15 +67,17 @@ object Par {
     sequence(fbs)
   }
 
+  private case class UnitFuture[A](get: A) extends Future[A] {
+    def isDone = true
+
+    def get(timeout: Long, units: TimeUnit) = get
+
+    def isCancelled = false
+
+    def cancel(evenIfRunning: Boolean): Boolean = false
+  }
+
+
 }
 
-private case class UnitFuture[A](get: A) extends Future[A] {
-  def isDone = true
-
-  def get(timeout: Long, units: TimeUnit) = get
-
-  def isCancelled = false
-
-  def cancel(evenIfRunning: Boolean): Boolean = false
-}
 
