@@ -89,12 +89,6 @@ object ParNb {
 
   def asyncF[A, B](f: A => B): A => Par[B] = a => lazyUnit(f(a))
 
-  // parallel map
-  def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = fork {
-    val fbs: List[Par[B]] = ps.map(asyncF(f))
-    sequence(fbs)
-  }
-
   def sequenceRight[A](as: List[Par[A]]): Par[List[A]] =
     as match {
       case Nil => unit(Nil)
@@ -105,12 +99,19 @@ object ParNb {
     if (as.isEmpty) unit(Vector())
     else if (as.length == 1) map(as.head)(a => Vector(a))
     else {
-      val (l, r) = as.splitAt(as.length / 2)
+      val (l,r) = as.splitAt(as.length/2)
       map2(sequenceBalanced(l), sequenceBalanced(r))(_ ++ _)
     }
   }
 
-  def sequence[A](as: List[Par[A]]): Par[List[A]] = map(sequenceBalanced(as.toIndexedSeq))(_.toList)
+  def sequence[A](as: List[Par[A]]): Par[List[A]] =
+    map(sequenceBalanced(as.toIndexedSeq))(_.toList)
+
+  def parMap[A,B](as: List[A])(f: A => B): Par[List[B]] =
+    sequence(as.map(asyncF(f)))
+
+  def parMap[A,B](as: IndexedSeq[A])(f: A => B): Par[IndexedSeq[B]] =
+    sequenceBalanced(as.map(asyncF(f)))
 
 
 }
