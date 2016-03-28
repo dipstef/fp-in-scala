@@ -7,6 +7,8 @@ object ParNb {
   trait Future[+A] {
     // Use of a common technique of using side effects as an implementation detail for a purely functional API.
     // We can get away with this because the side effects we use are not observable to code that uses Par.”
+
+    // callback or continuation
     private[chapter07] def apply(k: A => Unit): Unit
   }
 
@@ -48,21 +50,27 @@ object ParNb {
   def map2[A, B, C](p: Par[A], p2: Par[B])(f: (A, B) => C): Par[C] =
     es => new Future[C] {
       def apply(cb: C => Unit): Unit = {
+        // Two mutable vars are used to store two results
         var ar: Option[A] = None
         var br: Option[B] = None
 
-        // An Actor is essentially a concurrent process that doesn’t constantly occupy a thread. Instead, it only occupies a
-        // thread when it receives a message.
-        // Multiple threads may be concurrently sending messages to an actor, the actor processes only one message at a
-        // time, queueing other messages for subsequent processing
+        // An Actor awaits both results, combines them with f and passes the results to cb
         val combiner = Actor[Either[A, B]](es) {
+          // If the A result came in first, stores it in ar and waits for the B.
+          // If the A result came last and we already have B, calls f with both results and passes the resulting C to the callback cb.
           case Left(a) =>
-            if (br.isDefined) eval(es)(cb(f(a, br.get)))
-            else ar = Some(a)
+            br match {
+              case None => ar = Some(a)
+              case Some(b) => eval(es)(cb(f(a, b)))
+            }
+          // Analogously
           case Right(b) =>
-            if (ar.isDefined) eval(es)(cb(f(ar.get, b)))
-            else br = Some(b)
+            ar match {
+              case None => br = Some(b)
+              case Some(a) => eval(es)(cb(f(a, b)))
+            }
         }
+        // Passes the actor as continuation to both sides
         p(es)(a => combiner ! Left(a))
         p2(es)(b => combiner ! Right(b))
       }
