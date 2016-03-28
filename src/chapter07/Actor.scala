@@ -91,6 +91,11 @@ final class Actor[A](strategy: Strategy)(handler: A => Unit,
 
 private class Node[A](var a: A = null.asInstanceOf[A]) extends AtomicReference[Node[A]]
 
+
+// An Actor is essentially a concurrent process that doesn’t constantly occupy a thread. Instead, it only occupies a
+// thread when it receives a message.
+// Multiple threads may be concurrently sending messages to an actor, the actor processes only one message at a
+// time, queueing other messages for subsequent processing
 object Actor {
 
   /** Create an `Actor` backed by the given `ExecutorService`. */
