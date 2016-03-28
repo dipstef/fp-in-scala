@@ -9,7 +9,7 @@ object SqrtTest {
 
     val x = run(Executors.newFixedThreadPool(2))(p)
 
-    println("x = " + x)
+    x.foreach(println)
   }
 
 }
