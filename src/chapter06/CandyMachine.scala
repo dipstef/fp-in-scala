@@ -4,15 +4,16 @@ import chapter06.State.{sequence, get, modify}
 
 
 /** From Exercise 11 */
-sealed trait Input
-
-case object Coin extends Input
-
-case object Turn extends Input
-
-case class Machine(locked: Boolean, candies: Int, coins: Int)
 
 object CandyMachine {
+
+  sealed trait Input
+
+  case object Coin extends Input
+
+  case object Turn extends Input
+
+  case class Machine(locked: Boolean, candies: Int, coins: Int)
 
   def update = (i: Input) => (s: Machine) =>
     (i, s) match {
