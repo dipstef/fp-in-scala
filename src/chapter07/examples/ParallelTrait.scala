@@ -1,5 +1,4 @@
-package chapter07
-
+package chapter07.examples
 
 trait ParallelTrait {
   // Par itself doesn’t need to know how to actually implement the parallelism. It’s more a description of a parallel
@@ -11,7 +10,7 @@ trait ParallelTrait {
   def unit[A](a: => A): Par[A]
 
   // combines the results of two parallel computations with a binary function
-  def map2[A,B,C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C]
+  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C]
 
   // marks a computation for concurrent evaluation. The evaluation won’t actually occur until forced by run
   def fork[A](a: => Par[A]): Par[A]
