@@ -154,4 +154,15 @@ object ParNb {
 
   def joinViaFlatMap[A](a: Par[Par[A]]): Par[A] = flatMap(a)(x => x)
 
+  /* Gives us infix syntax for `Par`. */
+  implicit def toParOps[A](p: Par[A]): ParOps[A] = new ParOps(p)
+
+  // infix versions of `map`, `map2` and `flatMap`
+  class ParOps[A](p: Par[A]) {
+    def map[B](f: A => B): Par[B] = ParNb.map(p)(f)
+    def map2[B,C](b: Par[B])(f: (A,B) => C): Par[C] = ParNb.map2(p,b)(f)
+    def flatMap[B](f: A => Par[B]): Par[B] = ParNb.flatMap(p)(f)
+    def zip[B](b: Par[B]): Par[(A,B)] = p.map2(b)((_,_))
+  }
+
 }
