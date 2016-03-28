@@ -116,5 +116,15 @@ object ParNb {
   def parMap[A,B](as: IndexedSeq[A])(f: A => B): Par[IndexedSeq[B]] =
     sequenceBalanced(as.map(asyncF(f)))
 
+  // A computation that proceeds with t if cond results in true, or f if cond results in false
+  def choice[A](p: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    es => new Future[A] {
+      def apply(cb: A => Unit): Unit =
+        p(es) { b =>
+          if (b) eval(es) { t(es)(cb) }
+          else eval(es) { f(es)(cb) }
+        }
+    }
+
 
 }
