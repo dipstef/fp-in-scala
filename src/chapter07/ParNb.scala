@@ -1,6 +1,8 @@
 package chapter07
 
 import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
+import chapter07.exercises.Exercise11
+
 
 object ParNb {
 
@@ -102,29 +104,34 @@ object ParNb {
     if (as.isEmpty) unit(Vector())
     else if (as.length == 1) map(as.head)(a => Vector(a))
     else {
-      val (l,r) = as.splitAt(as.length/2)
+      val (l, r) = as.splitAt(as.length / 2)
       map2(sequenceBalanced(l), sequenceBalanced(r))(_ ++ _)
     }
   }
 
-  def sequence[A](as: List[Par[A]]): Par[List[A]] =
-    map(sequenceBalanced(as.toIndexedSeq))(_.toList)
+  def sequence[A](as: List[Par[A]]): Par[List[A]] = map(sequenceBalanced(as.toIndexedSeq))(_.toList)
 
-  def parMap[A,B](as: List[A])(f: A => B): Par[List[B]] =
-    sequence(as.map(asyncF(f)))
+  def parMap[A, B](as: List[A])(f: A => B): Par[List[B]] = sequence(as.map(asyncF(f)))
 
-  def parMap[A,B](as: IndexedSeq[A])(f: A => B): Par[IndexedSeq[B]] =
-    sequenceBalanced(as.map(asyncF(f)))
+  def parMap[A, B](as: IndexedSeq[A])(f: A => B): Par[IndexedSeq[B]] = sequenceBalanced(as.map(asyncF(f)))
 
   // A computation that proceeds with t if cond results in true, or f if cond results in false
   def choice[A](p: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
     es => new Future[A] {
       def apply(cb: A => Unit): Unit =
         p(es) { b =>
-          if (b) eval(es) { t(es)(cb) }
-          else eval(es) { f(es)(cb) }
+          if (b) eval(es) {
+            t(es)(cb)
+          }
+          else eval(es) {
+            f(es)(cb)
+          }
         }
     }
 
+  def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] = Exercise11.choiceN(p)(ps)
+
+  def choiceViaChoiceN[A](a: Par[Boolean])(ifTrue: Par[A], ifFalse: Par[A]) =
+    Exercise11.choiceViaChoiceN(a)(ifTrue, ifFalse)
 
 }
