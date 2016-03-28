@@ -1,6 +1,6 @@
 package chapter07.exercises
 
-import java.util.concurrent.{Callable, CountDownLatch, ExecutorService, Executors}
+import java.util.concurrent._
 
 /**
   * Hard: Our non-blocking representation doesn’t currently handle errors at all. If at any point our computation
@@ -44,7 +44,7 @@ object Exercise10 {
     val result = ref.get
     result match {
       case Left(a) => a
-      case Right(e) => onError(e).asInstanceOf[A]
+      case Right(e) => onError(e); null.asInstanceOf[A]
     }
   }
 
