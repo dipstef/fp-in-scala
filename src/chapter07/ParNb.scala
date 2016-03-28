@@ -1,7 +1,8 @@
 package chapter07
 
 import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
-import chapter07.exercises.Exercise11
+
+import chapter07.exercises.{Exercise11, Exercise12}
 
 
 object ParNb {
@@ -133,5 +134,7 @@ object ParNb {
 
   def choiceViaChoiceN[A](a: Par[Boolean])(ifTrue: Par[A], ifFalse: Par[A]) =
     Exercise11.choiceViaChoiceN(a)(ifTrue, ifFalse)
+
+  def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] = Exercise12.choiceMap(p)(ps)
 
 }
