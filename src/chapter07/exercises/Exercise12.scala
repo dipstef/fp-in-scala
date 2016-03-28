@@ -11,12 +11,9 @@ object Exercise12 {
 
   def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] = {
     es => new Future[V] {
-      def apply(cb: (V) => Unit): Unit = {
-        p(es)(k => {
-          ps(k)(es)(cb)
-        })
-      }
+      def apply(cb: (V) => Unit): Unit = p(es)(k => ps(k)(es)(cb))
     }
+
   }
 
 

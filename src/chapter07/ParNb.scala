@@ -2,7 +2,7 @@ package chapter07
 
 import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
 
-import chapter07.exercises.{Exercise11, Exercise12, Exercise13}
+import chapter07.exercises.{Exercise11, Exercise12, Exercise13, Exercise14}
 
 
 object ParNb {
@@ -148,5 +148,10 @@ object ParNb {
    */
   def flatMap[A, B](p: Par[A])(f: A => Par[B]): Par[B] = Exercise13.flatMap(p)(f)
 
+  def join[A](p: Par[Par[A]]): Par[A] = Exercise14.join(p)
+
+  def flatMapViaJoin[A,B](p: Par[A])(f: A => Par[B]): Par[B] = join(map(p)(f))
+
+  def joinViaFlatMap[A](a: Par[Par[A]]): Par[A] = flatMap(a)(x => x)
 
 }
