@@ -30,19 +30,22 @@ object Exercise10 {
 
   def run[A](es: ExecutorService)(p: Par[A], onError: Throwable => Unit = throw _): A = {
     // A mutable, thread-safe reference, to use for storing the result
-    val ref = new java.util.concurrent.atomic.AtomicReference[A]
+    val ref = new java.util.concurrent.atomic.AtomicReference[Either[A, Throwable]]
     // A latch which, when decremented, implies that `ref` has the result
     val latch = new CountDownLatch(1)
     // Asynchronously set the result, and decrement the latch
     p(es)(
-      { a => ref.set(a); latch.countDown() },
-      { e => try {onError(e)} finally {ref.set(null.asInstanceOf[A]); latch.countDown()}}
+      { a => ref.set(Left(a)); latch.countDown() }, { e => ref.set(Right(e)); latch.countDown() }
     )
 
     // Block until the `latch.countDown` is invoked asynchronously
     latch.await()
     // Once we've passed the latch, we know `ref` has been set, and return its value
-    ref.get
+    val result = ref.get
+    result match {
+      case Left(a) => a
+      case Right(e) => onError(e).asInstanceOf[A]
+    }
   }
 
   def unit[A](a: A): Par[A] =
