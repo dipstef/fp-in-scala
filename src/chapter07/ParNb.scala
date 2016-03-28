@@ -2,7 +2,7 @@ package chapter07
 
 import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
 
-import chapter07.exercises.{Exercise11, Exercise12}
+import chapter07.exercises.{Exercise11, Exercise12, Exercise13}
 
 
 object ParNb {
@@ -136,5 +136,17 @@ object ParNb {
     Exercise11.choiceViaChoiceN(a)(ifTrue, ifFalse)
 
   def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] = Exercise12.choiceMap(p)(ps)
+
+  def chooser[A, B](p: Par[A])(choices: A => Par[B]): Par[B] = flatMap(p)(choices)
+
+  /*
+    flatMap is suggestive of the fact that this operation could be decomposed into two steps: mapping f: A => Par[B]
+    over our Par[A], which generates a Par[Par[B]] and then flattening this nested Par[Par[B]] to a Par[B].
+
+    But this is interesting, it suggests that all we needed to do was add an even simpler combinator, let’s call it join,
+    for converting a Par[Par[X]] to Par[X] for any choice of X
+   */
+  def flatMap[A, B](p: Par[A])(f: A => Par[B]): Par[B] = Exercise13.flatMap(p)(f)
+
 
 }
