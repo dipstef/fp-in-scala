@@ -20,9 +20,12 @@ object ParNb {
     val ref = new java.util.concurrent.atomic.AtomicReference[A]
     // A latch which, when decremented, implies that `ref` has the result
     val latch = new CountDownLatch(1)
-    p(es) { a => ref.set(a); latch.countDown() } // Asynchronously set the result, and decrement the latch
-    latch.await() // Block until the `latch.countDown` is invoked asynchronously
-    ref.get // Once we've passed the latch, we know `ref` has been set, and return its value
+    // Asynchronously set the result, and decrement the latch
+    p(es) { a => ref.set(a); latch.countDown() }
+    // Block until the `latch.countDown` is invoked asynchronously
+    latch.await()
+    // Once we've passed the latch, we know `ref` has been set, and return its value
+    ref.get
   }
 
   def unit[A](a: A): Par[A] =
