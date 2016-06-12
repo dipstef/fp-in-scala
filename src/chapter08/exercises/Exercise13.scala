@@ -1,5 +1,7 @@
 package chapter08.exercises
 
+import chapter08.Gen.{apply => _, _}
+import chapter08.Prop._
 import chapter08.{Gen, SGen}
 
 /**
@@ -11,8 +13,15 @@ object Exercise13 {
   def listOf1[A](g: Gen[A]): SGen[List[A]] =
     SGen(n => g.listOfN(n max 1))
 
+  def testListMax(gen: Gen[Int]) = {
+    run(forAll(listOf1(gen)) { ns =>
+      val max = ns.max
+      !ns.exists(_ > max)
+    })
+  }
+
+
   def main(args: Array[String]) {
-    import chapter08.Examples.testListMax
 
     val smallInts = Gen.choose(-10, 10)
 
