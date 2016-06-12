@@ -8,7 +8,7 @@ import chapter08.Gen
   * *
   * Define some convenience functions on SGen that simply delegate to the corresponding functions on Gen
   */
-class Exercise11 {
+object Exercise11 {
 
   case class SGen[+A](g: Int => Gen[A]) {
     def apply(n: Int): Gen[A] = g(n)

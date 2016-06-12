@@ -12,6 +12,7 @@ import chapter05.Stream
 
  */
 case class Prop(run: (MaxSize, TestCases, RNG) => Result) {
+
   def &&(p: Prop) = Prop {
     (max, n, rng) => run(max, n, rng) match {
       case Passed | Proved => p.run(max, n, rng)
@@ -75,6 +76,9 @@ object Prop {
     }.find(_.isFalsified).getOrElse(Passed)
   }
 
+  def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
+    forAll(g(_))(f)
+
   def forAll[A](g: Int => Gen[A])(f: A => Boolean): Prop = Prop {
     (max, n, rng) =>
       val casesPerSize = (n - 1) / max + 1
@@ -98,6 +102,17 @@ object Prop {
       s"generated an exception: ${e.getMessage}\n" +
       s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
 
-
+  def run(p: Prop,
+          maxSize: Int = 100,
+          testCases: Int = 100,
+          rng: RNG = RNG.Simple(System.currentTimeMillis)): Unit =
+    p.run(maxSize, testCases, rng) match {
+      case Falsified(msg, n) =>
+        println(s"! Falsified after $n passed tests:\n $msg")
+      case Passed =>
+        println(s"+ OK, passed $testCases tests.")
+      case Proved =>
+        println(s"+ OK, proved property.")
+    }
 }
 
