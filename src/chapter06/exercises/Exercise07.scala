@@ -1,6 +1,6 @@
 package chapter06.exercises
 
-import chapter06.RNG.{SimpleRNG, Rand, unit, map2, int}
+import chapter06.RNG.{Simple, Rand, unit, map2, int}
 
 /**
   * Hard: If you can combine two RNG transitions, you should be able to combine a whole list of them.
@@ -29,7 +29,7 @@ object Exercise07 {
   def ints(count: Int): Rand[List[Int]] = sequence(List.fill(count)(int))
 
   def main(args: Array[String]) {
-    val rng = new SimpleRNG(123)
+    val rng = new Simple(123)
 
     println("sequence(List(unit(1), unit(2), unit(3)))(rng) = " + sequence(List(unit(1), unit(2), unit(3)))(rng))
 

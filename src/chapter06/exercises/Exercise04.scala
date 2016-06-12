@@ -1,7 +1,7 @@
 package chapter06.exercises
 
 import chapter06.RNG
-import chapter06.RNG.SimpleRNG
+import chapter06.RNG.Simple
 
 /**
   * Write a function to generate a list of random integers.”
@@ -32,7 +32,7 @@ object Exercise04 {
   }
 
   def main(args: Array[String]) {
-    val rng = SimpleRNG(123)
+    val rng = Simple(123)
 
     // elements are the same but in different order
     println("intsRecursive(count=3)(rng) = " + intsRecursive(count=3)(rng))

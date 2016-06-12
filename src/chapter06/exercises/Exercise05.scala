@@ -1,6 +1,6 @@
 package chapter06.exercises
 
-import chapter06.RNG.{Rand, SimpleRNG, map, nonNegativeInt}
+import chapter06.RNG.{Rand, Simple, map, nonNegativeInt}
 
 /**
   * Use map to reimplement double in a more elegant way
@@ -12,7 +12,7 @@ object Exercise05 {
   }
 
   def main(args: Array[String]) {
-    val rng = new SimpleRNG(123)
+    val rng = new Simple(123)
 
     println("rng.double = " + double(rng))
   }

@@ -2,7 +2,7 @@ package chapter06.exercises
 
 import chapter06.RNG
 import chapter06.exercises.Exercise01.nonNegativeInt
-import RNG.SimpleRNG
+import RNG.Simple
 
 /**
   * Write a function to generate a Double between 0 and 1, not including 1. Note: You can use Int.MaxValue to obtain the
@@ -16,7 +16,7 @@ object Exercise02 {
   }
 
   def main(args: Array[String]) {
-    val rng = new SimpleRNG(123)
+    val rng = new Simple(123)
 
     println("Integer.MAX_VALUE = " + Integer.MAX_VALUE)
 

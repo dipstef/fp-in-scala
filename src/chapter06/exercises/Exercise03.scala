@@ -1,7 +1,7 @@
 package chapter06.exercises
 
 import chapter06.RNG
-import chapter06.RNG.SimpleRNG
+import chapter06.RNG.Simple
 import chapter06.exercises.Exercise02.double
 
 /**
@@ -30,7 +30,7 @@ object Exercise03 {
   }
 
   def main(args: Array[String]) {
-    val rng: SimpleRNG = SimpleRNG(123)
+    val rng: Simple = Simple(123)
 
     println("intDouble(rng) = " + intDouble(rng))
     println("doubleInt(rng) = " + doubleInt(rng))

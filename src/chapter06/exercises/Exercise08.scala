@@ -53,10 +53,10 @@ object Exercise08 {
   }
 
   def main(args: Array[String]) {
-    println("flatMap example: " + flatMap(nonNegativeInt){ i => unit(i)}(new SimpleRNG(123)))
+    println("flatMap example: " + flatMap(nonNegativeInt){ i => unit(i)}(new Simple(123)))
 
     for( i <- 1 to 10) {
-      println("nonNegativeLessThan(10)(rng) = " + nonNegativeLessThan(10)(SimpleRNG(i)))
+      println("nonNegativeLessThan(10)(rng) = " + nonNegativeLessThan(10)(Simple(i)))
     }
   }
 }

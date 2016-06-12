@@ -1,7 +1,7 @@
 package chapter06.exercises
 
 import chapter06.RNG
-import RNG.SimpleRNG
+import RNG.Simple
 
 /**
   *Write a function that uses RNG.nextInt to generate a random integer between 0 and Int.maxValue (inclusive).
@@ -19,7 +19,7 @@ object Exercise01 {
 
 
   def main(args: Array[String]) {
-    val rng = new SimpleRNG(123)
+    val rng = new Simple(123)
     println("nonNegativeInt(r) = " + nonNegativeInt(rng))
 
     assert(nonNegativeInt(rng) == nonNegativeInt(rng))
