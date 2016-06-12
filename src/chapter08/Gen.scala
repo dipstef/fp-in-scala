@@ -1,7 +1,7 @@
 package chapter08
 
 import chapter06.{RNG, State}
-import chapter08.exercises.{Exercise04, Exercise05, Exercise07}
+import chapter08.exercises.{Exercise04, Exercise05, Exercise07, Exercise08}
 
 case class Gen[+A](sample: State[RNG, A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =
@@ -26,4 +26,6 @@ object Gen {
   def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] = Exercise05.listOfN(n, g)
 
   def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] = Exercise07.union(g1, g2)
+
+  def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)) = Exercise08.weighted(g1, g2)
 }
