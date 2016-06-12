@@ -16,6 +16,7 @@ object Exercise09 {
 
   // needs to generate random test cases using our current representation of Gen
   case class Prop(run: (TestCases, RNG) => Result) {
+
     def &&(p: Prop) = Prop {
       (n, rng) => run(n, rng) match {
         case Passed | Proved => p.run(n, rng)
