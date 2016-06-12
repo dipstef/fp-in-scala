@@ -6,9 +6,10 @@ import chapter05.Stream
 
 // needs to generate random test cases using our current representation of Gen
 case class Prop(run: (TestCases, RNG) => Result) {
+
   def &&(p: Prop) = Prop {
     (n, rng) => run(n, rng) match {
-      case Passed | Proved => p.run(max, n, rng)
+      case Passed | Proved => p.run(n, rng)
       case x => x
     }
   }
@@ -16,7 +17,7 @@ case class Prop(run: (TestCases, RNG) => Result) {
   def ||(p: Prop) = Prop {
     (n, rng) => run(n, rng) match {
       // In case of failure, run the other prop.
-      case Falsified(msg, _) => p.tag(msg).run(max, n, rng)
+      case Falsified(msg, _) => p.tag(msg).run(n, rng)
       case x => x
     }
   }
