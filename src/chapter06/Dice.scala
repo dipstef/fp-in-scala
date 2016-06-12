@@ -1,6 +1,6 @@
 package chapter06
 
-import chapter06.RNG.{SimpleRNG, Rand, map, nonNegativeLessThan}
+import chapter06.RNG.{Simple, Rand, map, nonNegativeLessThan}
 
 object Dice {
 
@@ -8,7 +8,7 @@ object Dice {
 
   def main(args: Array[String]) {
     for( i <- 1 to 6) {
-      println("nonNegativeLessThan(10)(rng) = " + rollDie(SimpleRNG(i))._1)
+      println("nonNegativeLessThan(10)(rng) = " + rollDie(Simple(i))._1)
     }
   }
 }
