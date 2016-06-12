@@ -14,6 +14,8 @@ case class Gen[+A](sample: State[RNG, A]) {
   /* A version of `listOfN` that generates the size to use dynamically. */
   def listOfN(size: Gen[Int]): Gen[List[A]] =
     size flatMap (n => this.listOfN(n))
+
+  def unsized = SGen(_ => this)
 }
 
 object Gen {
