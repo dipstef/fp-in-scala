@@ -4,6 +4,13 @@ import chapter06.{RNG, State}
 import chapter08.exercises.{Exercise04, Exercise05, Exercise07, Exercise08}
 
 case class Gen[+A](sample: State[RNG, A]) {
+
+  def map[B](f: A => B): Gen[B] =
+    Gen(sample.map(f))
+
+  def map2[B,C](g: Gen[B])(f: (A,B) => C): Gen[C] =
+    Gen(sample.map2(g.sample)(f))
+
   def flatMap[B](f: A => Gen[B]): Gen[B] =
     Gen(sample.flatMap(a => f(a).sample))
 
@@ -16,6 +23,9 @@ case class Gen[+A](sample: State[RNG, A]) {
     size flatMap (n => this.listOfN(n))
 
   def unsized = SGen(_ => this)
+
+  def **[B](g: Gen[B]): Gen[(A,B)] =
+    (this map2 g)((_,_))
 }
 
 object Gen {
