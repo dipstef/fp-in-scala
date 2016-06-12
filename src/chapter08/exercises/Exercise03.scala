@@ -7,7 +7,7 @@ package chapter08.exercises
   * trait Prop { def check: Boolean }
   *
   */
-class Exercise03 {
+object Exercise03 {
 
   /* Since check has a side effect, the only option for implementing && in this case would be to run both check methods.
      So if check prints out a test report, then we would get two of them, and they would print failures and successes
