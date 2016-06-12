@@ -27,6 +27,10 @@ object RNG {
 
   def double(rng: RNG): (Double, RNG) = Exercise02.double(rng)
 
+  def boolean(rng: RNG): (Boolean, RNG) =
+    rng.nextInt match { case (i,rng2) => (i%2==0,rng2) }
+
+
   def intDouble(rng: RNG): ((Int, Double), RNG) = Exercise03.intDouble(rng)
 
   def doubleInt(rng: RNG): ((Double, Int), RNG) = Exercise03.doubleInt(rng)
