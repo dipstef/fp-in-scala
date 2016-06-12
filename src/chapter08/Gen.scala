@@ -42,4 +42,6 @@ object Gen {
   def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)) = Exercise08.weighted(g1, g2)
 
   def listOf[A](g: Gen[A]): SGen[List[A]] = Exercise12.listOf(g)
+
+  def listOf1[A](g: Gen[A]) = Exercise13.listOf1(g)
 }
