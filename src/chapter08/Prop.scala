@@ -114,5 +114,11 @@ object Prop {
       case Proved =>
         println(s"+ OK, proved property.")
     }
+
+  // Avoids invoking forAll and testing a boolean property n times, check will only run once.
+  def check(p: => Boolean): Prop = Prop { (_, _, _) =>
+    if (p) Passed else Falsified("()", 0)
+  }
+
 }
 
