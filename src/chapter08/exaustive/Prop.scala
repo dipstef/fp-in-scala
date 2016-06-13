@@ -1,14 +1,9 @@
 package chapter08.exaustive
 
-import java.util.concurrent.Executors
-
 import chapter05.{Cons, Stream}
 import chapter06.RNG
-import chapter07.Par
-import chapter07.Par._
-import chapter08.exaustive.Gen.{**, Sized, Unsized}
+import chapter08.exaustive.Gen.{Sized, Unsized, randomStream, unit}
 import chapter08.exaustive.Prop._
-import chapter08.exaustive.Gen.{choose, randomStream, unit, weighted}
 import chapter08.exaustive.Status._
 
 case class Prop(run: (MaxSize, TestCases, RNG) => Result) {
@@ -122,10 +117,6 @@ object Prop {
 
   def check(p: => Boolean): Prop = // Note that we are non-strict here
     forAll(unit(()))(_ => p)
-
-
-  def equal[A](p: Par[A], p2: Par[A]): Par[Boolean] =
-    Par.map2(p, p2)(_ == _)
 
 
 }

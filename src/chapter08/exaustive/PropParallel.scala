@@ -2,8 +2,9 @@ package chapter08.exaustive
 
 import java.util.concurrent.Executors
 
+import chapter07.Par
 import chapter07.Par.Par
-import chapter08.exaustive.Gen.{choose, unit, weighted, **}
+import chapter08.exaustive.Gen.{**, choose, unit, weighted}
 import chapter08.exaustive.Prop.forAll
 
 
@@ -24,5 +25,8 @@ object PropParallel {
 
   def forAllPar3[A](g: Gen[A])(f: A => Par[Boolean]): Prop =
     forAll(S ** g) { case s ** a => f(a)(s).get }
+
+  def equal[A](p: Par[A], p2: Par[A]): Par[Boolean] =
+    Par.map2(p, p2)(_ == _)
 
 }

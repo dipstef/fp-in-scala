@@ -2,16 +2,13 @@ package chapter08.exaustive
 
 import java.util.concurrent.{ExecutorService, Executors}
 
-import chapter08.exaustive.Gen._
-import chapter08.exaustive.Prop._
-
-import java.util.concurrent.{ExecutorService, Executors}
-
 import chapter07.Par
 import chapter07.Par._
+import chapter08.exaustive.Gen._
+import chapter08.exaustive.Prop._
+import chapter08.exaustive.PropParallel._
 
-import language.implicitConversions
-import language.postfixOps
+import scala.language.{implicitConversions, postfixOps}
 
 object Example {
 
