@@ -1,6 +1,6 @@
 package chapter02
 
-import chapter02.exercise._
+import chapter02.exercises._
 
 // A comment!
 /* Another comment */

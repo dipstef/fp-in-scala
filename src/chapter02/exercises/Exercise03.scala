@@ -1,4 +1,4 @@
-package chapter02.exercise
+package chapter02.exercises
 
 /**
   * Let’s look at another example, currying,[9] which converts a function f of two arguments into a function of one

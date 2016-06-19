@@ -1,4 +1,4 @@
-package chapter02.exercise
+package chapter02.exercises
 
 /**
   * Implement the higher-order function that composes two functions.

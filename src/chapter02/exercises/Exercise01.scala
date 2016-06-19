@@ -1,4 +1,4 @@
-package chapter02.exercise
+package chapter02.exercises
 
 /**
   * Write a recursive function to get the nth Fibonacci number (http://mng.bz/C29s).
