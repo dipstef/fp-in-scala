@@ -1,5 +1,7 @@
 package chapter08.exaustive
 
+import chapter08.exaustive.Gen.{Sized, Unsized}
+
 trait SGen[+A] {
   def map[B](f: A => B): SGen[B] = this match {
     case Sized(g) => Sized(g andThen (_ map f))
