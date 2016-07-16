@@ -49,9 +49,19 @@ trait Stream[+A] {
   /* Create a new Stream[A] from this, but ignore the n first elements. This can be achieved by recursively calling
      drop on the invoked tail of a cons cell. Note that the implementation is also tail recursive.
     */
-  def drop(n: Int): Stream[A] = sys.error("todo")
+  @annotation.tailrec
+  final def drop(n: Int): Stream[A] = this match {
+    case Cons(_, t) if n > 0 => t().drop(n - 1)
+    case _ => this
+  }
 
-  def takeWhile(p: A => Boolean): Stream[A] = sys.error("todo")
+
+  // It's a common Scala style to write method calls without `.` notation, as in `t() takeWhile f`.
+  def takeWhile(f: A => Boolean): Stream[A] = this match {
+    case Cons(h, t) if f(h()) => cons(h(), t() takeWhile f)
+    case _ => empty
+  }
+
 
   def forAll(p: A => Boolean): Boolean = sys.error("todo")
 
