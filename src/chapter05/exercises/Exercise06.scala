@@ -1,6 +1,6 @@
 package chapter05.exercises
 
-class Exercise06 {
+object Exercise06 {
 
 
   trait Stream[+A] {
