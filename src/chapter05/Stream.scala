@@ -33,18 +33,22 @@ trait Stream[+A] {
   }
 
 
-  /*
-   Create a new Stream[A] from taking the n first elements from this. We can achieve that by recursively
-   calling take on the invoked tail of a cons cell. We make sure that the tail is not invoked unless
-   we need to, by handling the special case where n == 1 separately. If n == 0, we can avoid looking
-   at the stream at all.
- */
+  /* Create a new Stream[A] from taking the n first elements from this.
+
+     We can achieve that by recursively calling take on the invoked tail of a cons cell.
+     We make sure that the tail is not invoked unless we need to, by handling the special case where n == 1 separately.
+
+     If n == 0, we can avoid looking at the stream at all.
+   */
   def take(n: Int): Stream[A] = this match {
     case Cons(h, t) if n > 1 => cons(h(), t().take(n - 1))
     case Cons(h, _) if n == 1 => cons(h(), empty)
     case _ => empty
   }
 
+  /* Create a new Stream[A] from this, but ignore the n first elements. This can be achieved by recursively calling
+     drop on the invoked tail of a cons cell. Note that the implementation is also tail recursive.
+    */
   def drop(n: Int): Stream[A] = sys.error("todo")
 
   def takeWhile(p: A => Boolean): Stream[A] = sys.error("todo")
