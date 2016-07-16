@@ -5,14 +5,18 @@ import Stream._
 
 trait Stream[+A] {
 
-  def foldRight[B](z: => B)(f: (A, => B) => B): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.
-    this match {
-      case Cons(h, t) => f(h(), t().foldRight(z)(f)) // If `f` doesn't evaluate its second argument, the recursion never occurs.
-      case _ => z
-    }
+  // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name
+  // and may choose not to evaluate it.
+  def foldRight[B](z: => B)(f: (A, => B) => B): B =
+  this match {
+    case Cons(h, t) => f(h(), t().foldRight(z)(f)) // If `f` doesn't evaluate its second argument, the recursion never occurs.
+    case _ => z
+  }
 
   def exists(p: A => Boolean): Boolean =
-    foldRight(false)((a, b) => p(a) || b) // Here `b` is the unevaluated recursive step that folds the tail of the stream. If `p(a)` returns `true`, `b` will never be evaluated and the computation terminates early.
+  // Here `b` is the unevaluated recursive step that folds the tail of the stream. If `p(a)` returns `true`,
+  // `b` will never be evaluated and the computation terminates early.
+    foldRight(false)((a, b) => p(a) || b)
 
   @annotation.tailrec
   final def find(f: A => Boolean): Option[A] = this match {
@@ -63,7 +67,10 @@ trait Stream[+A] {
   }
 
 
-  def forAll(p: A => Boolean): Boolean = sys.error("todo")
+  // Since `&&` is non-strict in its second argument, this terminates the traversal as soon as a nonmatching element
+  // is found.
+  def forAll(f: A => Boolean): Boolean = foldRight(true)((a, b) => f(a) && b)
+
 
   def headOption: Option[A] = sys.error("todo")
 
