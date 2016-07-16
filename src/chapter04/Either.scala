@@ -1,6 +1,8 @@
 package chapter04
 
 
+import chapter04.exercises.{Exercise04, Exercise07}
+
 import scala.{Either => _, Left => _, Option => _, Right => _, _}
 
 // hide std library `Option` and `Either`, since we are writing our own in this chapter
@@ -33,9 +35,9 @@ case class Left[+E](get: E) extends Either[E, Nothing]
 case class Right[+A](get: A) extends Either[Nothing, A]
 
 object Either {
-  def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] = sys.error("todo")
+  def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] = Exercise07.traverse(es)(f)
 
-  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = sys.error("todo")
+  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = Exercise07.sequence(es)
 
   def Try[A](a: => A): Either[Exception, A] =
     try Right(a)
