@@ -5,10 +5,9 @@ import chapter05.exercises.Exercise03.Cons
 /**
   * Use foldRight to implement takeWhile.
   */
-class Exercise05 {
+object Exercise05 {
 
   import Stream._
-
 
   trait Stream[+A] {
 
