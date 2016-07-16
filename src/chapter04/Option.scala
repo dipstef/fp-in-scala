@@ -1,7 +1,7 @@
 package chapter04
 
 
-import chapter04.exercises.Exercise03
+import chapter04.exercises.{Exercise03, Exercise04}
 
 import scala.{Either => _, Option => _, Some => _, _}
 
@@ -47,7 +47,7 @@ object Option {
 
   def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = Exercise03.map2(a, b)(f)
 
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = sys.error("todo")
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = Exercise04.sequence(a)
 
   def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = sys.error("todo")
 
