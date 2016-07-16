@@ -66,13 +66,17 @@ trait Stream[+A] {
     case _ => empty
   }
 
+  def takeWhile_1(f: A => Boolean): Stream[A] =
+    foldRight(empty[A])((h,t) =>
+      if (f(h)) cons(h,t)
+      else      empty)
 
   // Since `&&` is non-strict in its second argument, this terminates the traversal as soon as a nonmatching element
   // is found.
   def forAll(f: A => Boolean): Boolean = foldRight(true)((a, b) => f(a) && b)
 
 
-  def headOption: Option[A] = sys.error("todo")
+  def headOption: Option[A] = foldRight(None: Option[A])((h, _) => Some(h))
 
   // 5.7 map, filter, append, flatmap using foldRight. Part of the exercise is
   // writing your own function signatures.
@@ -112,4 +116,5 @@ object Stream {
   def from(n: Int): Stream[Int] = sys.error("todo")
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = sys.error("todo")
+
 }
