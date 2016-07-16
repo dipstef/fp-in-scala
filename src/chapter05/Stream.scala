@@ -60,9 +60,12 @@ trait Stream[+A] {
   }
 
 
-  def takeWhile(f: A => Boolean): Stream[A] =
-    foldRight(empty[A])((h, t) =>
-      if (f(h)) cons(h, t)  else empty)
+  // It's a common Scala style to write method calls without `.` notation, as in `t() takeWhile f`.
+  def takeWhile(f: A => Boolean): Stream[A] = this match {
+    case Cons(h, t) if f(h()) => cons(h(), t() takeWhile f)
+    case _ => empty
+  }
+
 
   // Since `&&` is non-strict in its second argument, this terminates the traversal as soon as a nonmatching element
   // is found.
