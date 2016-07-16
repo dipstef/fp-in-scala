@@ -1,7 +1,7 @@
 package chapter04
 
 
-import chapter04.exercises.{Exercise03, Exercise05}
+import chapter04.exercises.{Exercise02, Exercise03, Exercise05}
 
 import scala.{Either => _, Option => _, Some => _, _}
 
@@ -50,5 +50,15 @@ object Option {
   def sequence[A](a: List[Option[A]]): Option[List[A]] = Exercise05.sequence(a)
 
   def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = Exercise05.traverse(a)(f)
+
+}
+
+object Functions {
+
+  def mean(xs: Seq[Double]): Option[Double] =
+    if (xs.isEmpty) None
+    else Some(xs.sum / xs.length)
+
+  def variance(xs: Seq[Double]): Option[Double] = Exercise02.variance(xs)
 
 }
