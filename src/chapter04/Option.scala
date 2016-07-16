@@ -1,6 +1,8 @@
 package chapter04
 
 
+import chapter04.exercises.Exercise03
+
 import scala.{Either => _, Option => _, Some => _, _}
 
 // hide std library `Option`, `Some` and `Either`, since we are writing our own in this chapter
@@ -41,3 +43,12 @@ sealed trait Option[+A] {
 case class Some[+A](get: A) extends Option[A]
 
 case object None extends Option[Nothing]
+
+object Option {
+
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = Exercise03.map2(a, b)(f)
+
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = sys.error("todo")
+
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = sys.error("todo")
+}
