@@ -20,6 +20,19 @@ trait Stream[+A] {
     case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
   }
 
+  def toList: List[A] = {
+    val buf = new collection.mutable.ListBuffer[A]
+    @annotation.tailrec
+    def go(s: Stream[A]): List[A] = s match {
+      case Cons(h, t) =>
+        buf += h()
+        go(t())
+      case _ => buf.toList
+    }
+    go(this)
+  }
+
+
   def take(n: Int): Stream[A] = sys.error("todo")
 
   def drop(n: Int): Stream[A] = sys.error("todo")
@@ -44,12 +57,13 @@ case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
 object Stream {
 
-  // smart constructors, which is what we call a function for constructing a data type that ensures some additional
-  // invariant or provides a slightly different signature than the “real” constructors used for pattern matchin
+  /* smart constructors, which is what we call a function for constructing a data type that ensures some additional
+     invariant or provides a slightly different signature than the “real” constructors used for pattern matchin
 
-  // our cons smart constructor takes care of memoizing the by-name arguments for the head and tail of the Cons.
-  // This is a common trick, and it ensures that our thunk will only do its work once, when forced for the first time.
-  // Subsequent forces will return the cached lazy val
+     our cons smart constructor takes care of memoizing the by-name arguments for the head and tail of the Cons.
+     This is a common trick, and it ensures that our thunk will only do its work once, when forced for the first time.
+     Subsequent forces will return the cached lazy val
+   */
   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {
     lazy val head = hd
     lazy val tail = tl
