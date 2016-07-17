@@ -1,7 +1,5 @@
 package chapter05.exercises
 
-import chapter05.exercises.Exercise03.Cons
-
 /**
   * Use foldRight to implement takeWhile.
   */
