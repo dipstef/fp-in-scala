@@ -135,7 +135,10 @@ trait Stream[+A] {
       case (Cons(h1, t1), Cons(h2, t2)) => Some(f(Some(h1()), Some(h2())) -> (t1() -> t2()))
     }
 
-  def startsWith[B](s: Stream[B]): Boolean = sys.error("todo")
+  def startsWith[B](s: Stream[B]): Boolean =
+    zipAll(s).takeWhile(_._2.isDefined) forAll {
+      case (h, h2) => h == h2
+    }
 }
 
 case object Empty extends Stream[Nothing]
@@ -167,7 +170,7 @@ object Stream {
 
   def from(n: Int): Stream[Int] = Exercise09.from(n)
 
-  def from_1(n: Int): Stream[Int] = Exercise12.from(n)
+  def from_(n: Int): Stream[Int] = Exercise12.from(n)
 
 
   /*
