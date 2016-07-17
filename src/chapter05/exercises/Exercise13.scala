@@ -77,7 +77,6 @@ object Exercise13 {
         case None => empty
       }
 
-
   }
 
 }
