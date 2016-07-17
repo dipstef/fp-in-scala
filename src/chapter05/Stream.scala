@@ -2,16 +2,17 @@ package chapter05
 
 
 import Stream._
+import chapter05.exercises.Exercise09
 
 trait Stream[+A] {
 
   // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name
   // and may choose not to evaluate it.
   def foldRight[B](z: => B)(f: (A, => B) => B): B =
-    this match {
-      case Cons(h, t) => f(h(), t().foldRight(z)(f)) // If `f` doesn't evaluate its second argument, the recursion never occurs.
-      case _ => z
-    }
+  this match {
+    case Cons(h, t) => f(h(), t().foldRight(z)(f)) // If `f` doesn't evaluate its second argument, the recursion never occurs.
+    case _ => z
+  }
 
   def exists(p: A => Boolean): Boolean =
   // Here `b` is the unevaluated recursive step that folds the tail of the stream. If `p(a)` returns `true`,
@@ -67,9 +68,9 @@ trait Stream[+A] {
   }
 
   def takeWhile_1(f: A => Boolean): Stream[A] =
-    foldRight(empty[A])((h,t) =>
-      if (f(h)) cons(h,t)
-      else      empty)
+    foldRight(empty[A])((h, t) =>
+      if (f(h)) cons(h, t)
+      else empty)
 
   // Since `&&` is non-strict in its second argument, this terminates the traversal as soon as a nonmatching element
   // is found.
@@ -122,10 +123,14 @@ object Stream {
     if (as.isEmpty) empty
     else cons(as.head, apply(as.tail: _*))
 
-  val ones: Stream[Int] = Stream.cons(1, ones)
-
-  def from(n: Int): Stream[Int] = sys.error("todo")
+  def from(n: Int): Stream[Int] = Exercise09.from(n)
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = sys.error("todo")
+
+}
+
+object Streams {
+
+  val ones: Stream[Int] = Stream.cons(1, ones)
 
 }
