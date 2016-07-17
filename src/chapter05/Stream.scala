@@ -2,7 +2,7 @@ package chapter05
 
 
 import Stream._
-import chapter05.exercises.{Exercise09, Exercise11}
+import chapter05.exercises.{Exercise09, Exercise11, Exercise12}
 
 trait Stream[+A] {
 
@@ -125,6 +125,9 @@ object Stream {
 
   def from(n: Int): Stream[Int] = Exercise09.from(n)
 
+  def from_1(n: Int): Stream[Int] = Exercise12.from(n)
+
+
   /*
     The unfold function is an example of what’s sometimes called a corecursive function.
 
@@ -139,10 +142,13 @@ object Stream {
    */
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = Exercise11.unfold(z)(f)
 
+
 }
 
 object Streams {
 
   val ones: Stream[Int] = Stream.cons(1, ones)
+
+  val fibs: Stream[Int] = Exercise12.fibs
 
 }
