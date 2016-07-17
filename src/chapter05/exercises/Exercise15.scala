@@ -60,7 +60,6 @@ object Exercise15 {
       if (as.isEmpty) empty
       else cons(as.head, apply(as.tail: _*))
 
-
   }
 
 
