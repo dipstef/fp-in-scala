@@ -165,8 +165,7 @@ trait Parsers[Parser[+_]] extends BaseParsers[Parser] {
   def thru(s: String): Parser[String] = (".*?"+Pattern.quote(s)).r
 
   /** Floating point literals, converted to a `Double`. */
-  def double: Parser[Double] =
-    doubleString map (_.toDouble) label "double literal"
+  def double: Parser[Double] = doubleString map (_.toDouble) label "double literal"
 
   /** C/Java style floating point literals, e.g .1, -1.0, 1e9, 1E-23, etc.
     * Result is left as a string to keep full precision
