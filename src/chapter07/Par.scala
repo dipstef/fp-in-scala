@@ -2,7 +2,6 @@ package chapter07
 
 import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 
-import chapter07.exercises.{Exercise03, Exercise04, Exercise05}
 
 object Par {
 
@@ -35,7 +34,7 @@ object Par {
   // serious problem with the implementation, and we will discuss this later in the chapter.
   def fork[A](a: => Par[A]): Par[A] =
     es => es.submit(new Callable[A] {
-      def call = a(es).get
+      def call: A = a(es).get
     })
 
   // derived combinator: wraps its unevaluated argument in a Par and marks it for concurrent evaluation
@@ -48,18 +47,38 @@ object Par {
 
 
   // this version of map2 allows timeouts
-  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = Exercise03.map2(a, b)(f)
+  // Exercise 0
+  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] = (es: ExecutorService) => {
+    val (af, bf) = (a(es), b(es))
+    Map2Future(af, bf, f)
+  }
 
-  def asyncF[A, B](f: A => B): A => Par[B] = Exercise04.asyncF(f)
+  // Exercise 04
+  def asyncF[A, B](f: A => B): A => Par[B] = a => lazyUnit(f(a))
 
   // map can be implemented in terms of map2, but not the other way around, just shows that map2 is strictly more powerful
   def map[A, B](pa: Par[A])(f: A => B): Par[B] = map2(pa, unit(()))((a, _) => f(a))
 
   // returns a sorted result
-  def sortPar(parList: Par[List[Int]]) = map(parList)(_.sorted)
+  def sortPar(parList: Par[List[Int]]): Par[List[Int]] = map(parList)(_.sorted)
 
   // collects n parallel results
-  def sequence[A](as: List[Par[A]]): Par[List[A]] = Exercise05.sequence(as)
+  // Exercise 05
+  def sequence[A](as: List[Par[A]]): Par[List[A]] =
+    map(sequenceBalanced(as.toIndexedSeq))(_.toList)
+
+
+  private def sequenceBalanced[A](as: IndexedSeq[Par[A]]): Par[IndexedSeq[A]] = fork {
+    if (as.isEmpty)
+      unit(Vector())
+    else if (as.length == 1)
+      map(as.head)(a => Vector(a))
+    else {
+      val (l,r) = as.splitAt(as.length/2)
+      // concatenate all results
+      map2(sequenceBalanced(l), sequenceBalanced(r))(_ ++ _)
+    }
+  }
 
   // parallel map
   def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = fork {
@@ -70,7 +89,7 @@ object Par {
   private case class UnitFuture[A](get: A) extends Future[A] {
     def isDone = true
 
-    def get(timeout: Long, units: TimeUnit) = get
+    def get(timeout: Long, units: TimeUnit): A = get
 
     def isCancelled = false
 
@@ -80,4 +99,37 @@ object Par {
 
 }
 
+/**
+  * Note: this implementation will not prevent repeated evaluation if multiple threads call `get` in parallel.
+  * We could prevent this using synchronization, but it isn't needed for our purposes here (also, repeated evaluation of
+  * pure values won't affect results).
+  */
+case class Map2Future[A, B, C](a: Future[A],
+                               b: Future[B],
+                               f: (A, B) => C) extends Future[C] {
 
+  @volatile var cache: Option[C] = None
+
+  override def isDone: Boolean = cache.isDefined
+
+  override def isCancelled: Boolean = a.isCancelled || b.isCancelled
+
+  override def cancel(evenIfRunning: Boolean): Boolean = a.cancel(evenIfRunning) || b.cancel(evenIfRunning)
+
+  override def get: C = compute(Long.MaxValue)
+
+  override def get(timeout: Long, units: TimeUnit): C = compute(TimeUnit.NANOSECONDS.convert(timeout, units))
+
+  private def compute(timeoutInNanos: Long): C = cache match {
+    case Some(c) => c
+    case None =>
+      val start = System.nanoTime
+      val ar = a.get(timeoutInNanos, TimeUnit.NANOSECONDS)
+      val stop = System.nanoTime
+      val aTime = stop - start
+      val br = b.get(timeoutInNanos - aTime, TimeUnit.NANOSECONDS)
+      val ret = f(ar, br)
+      cache = Some(ret)
+      ret
+  }
+}

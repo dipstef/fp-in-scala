@@ -9,12 +9,10 @@ import chapter07.ParNb.{Future, Par}
   */
 object Exercise12 {
 
-  def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] = {
+  def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] =
     es => new Future[V] {
       def apply(cb: (V) => Unit): Unit = p(es)(k => ps(k)(es)(cb))
     }
-
-  }
 
 
 }

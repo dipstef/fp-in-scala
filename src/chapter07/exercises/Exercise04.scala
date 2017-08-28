@@ -8,8 +8,7 @@ import chapter07.Par.{Par, lazyUnit}
 
 object Exercise04 {
 
-  def asyncF[A, B](f: A => B): A => Par[B] = {
-    a => lazyUnit(f(a))
-  }
+  def asyncF[A, B](f: A => B): A => Par[B] = a => lazyUnit(f(a))
+
 
 }

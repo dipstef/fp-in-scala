@@ -2,8 +2,6 @@ package chapter07
 
 import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
 
-import chapter07.exercises.{Exercise11, Exercise12, Exercise13, Exercise14}
-
 
 object ParNb {
 
@@ -47,7 +45,7 @@ object ParNb {
   // helper function to evaluate an action asynchronously
   def eval(es: ExecutorService)(r: => Unit): Unit =
     es.submit(new Callable[Unit] {
-      def call = r
+      def call: Unit = r
     })
 
 
@@ -130,12 +128,24 @@ object ParNb {
         }
     }
 
-  def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] = Exercise11.choiceN(p)(ps)
+  // Exercise 11
+  def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] = es => new Future[A] {
+    def apply(cb: A => Unit): Unit =
+      p(es)(ind =>
+        eval(es) {
+          ps(ind)(es)(cb)
+        }
+      )
+  }
 
-  def choiceViaChoiceN[A](a: Par[Boolean])(ifTrue: Par[A], ifFalse: Par[A]) =
-    Exercise11.choiceViaChoiceN(a)(ifTrue, ifFalse)
+  // Exercise 11
+  def choiceViaChoiceN[A](a: Par[Boolean])(ifTrue: Par[A], ifFalse: Par[A]): Par[A] =
+    choiceN(map(a)(b => if (b) 0 else 1))(List(ifTrue, ifFalse))
 
-  def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] = Exercise12.choiceMap(p)(ps)
+  // Exercise 12
+  def choiceMap[K, V](p: Par[K])(ps: Map[K, Par[V]]): Par[V] =  es => new Future[V] {
+    def apply(cb: (V) => Unit): Unit = p(es)(k => ps(k)(es)(cb))
+  }
 
   def chooser[A, B](p: Par[A])(choices: A => Par[B]): Par[B] = flatMap(p)(choices)
 
@@ -146,9 +156,22 @@ object ParNb {
     But this is interesting, it suggests that all we needed to do was add an even simpler combinator, let’s call it join,
     for converting a Par[Par[X]] to Par[X] for any choice of X
    */
-  def flatMap[A, B](p: Par[A])(f: A => Par[B]): Par[B] = Exercise13.flatMap(p)(f)
-
-  def join[A](p: Par[Par[A]]): Par[A] = Exercise14.join(p)
+  // Exercise 13
+  def flatMap[A, B](p: Par[A])(f: A => Par[B]): Par[B] = {
+    es => new Future[B]{
+      def apply(cb: B => Unit): Unit =
+        p(es)(a => f(a)(es)(cb))
+    }
+  }
+  // Exercise 14
+  def join[A](p: Par[Par[A]]): Par[A] = es => new Future[A] {
+    def apply(cb: A => Unit): Unit =
+      p(es)(
+        p2 => eval(es) {
+          p2(es)(cb)
+        }
+      )
+  }
 
   def flatMapViaJoin[A,B](p: Par[A])(f: A => Par[B]): Par[B] = join(map(p)(f))
 

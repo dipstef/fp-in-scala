@@ -123,7 +123,7 @@ object Strategy {
     def apply[A](a: => A): () => A = {
       val f = es.submit {
         new Callable[A] {
-          def call = a
+          def call: A = a
         }
       }
       () => f.get
