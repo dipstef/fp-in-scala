@@ -2,7 +2,7 @@ package chapter10
 
 trait Foldable[F[_]] {
 
-  import Monoid._
+  import Monoids._
 
   def foldRight[A, B](as: F[A])(z: B)(f: (A, B) => B): B =
     foldMap(as)(f.curried)(endoMonoid[B])(z)

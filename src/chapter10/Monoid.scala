@@ -2,7 +2,7 @@ package chapter10
 
 import chapter07.ParNb
 import chapter07.ParNb.Par
-import Monoids.endoMonoid
+import Monoids.{endoMonoid, dual}
 
 import language.higherKinds
 
@@ -13,14 +13,6 @@ trait Monoid[A] {
 }
 
 object Monoid {
-
-
-  // We can get the dual of any monoid just by flipping the `op`.
-  def dual[A](m: Monoid[A]): Monoid[A] = new Monoid[A] {
-    def op(x: A, y: A): A = m.op(y, x)
-
-    val zero: A = m.zero
-  }
 
   def concatenate[A](as: List[A], m: Monoid[A]): A = as.foldLeft(m.zero)(m.op)
 

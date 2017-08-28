@@ -1,7 +1,7 @@
 package chapter10.exercises
 
-import chapter10.Monoid.{foldMap, dual}
-import chapter10.exercises.Exercise03.endoMonoid
+import chapter10.Monoid.foldMap
+import chapter10.Monoids.{dual, endoMonoid}
 
 /**
   * Hard: The foldMap function can be implemented using either foldLeft or foldRight. But you can also write foldLeft

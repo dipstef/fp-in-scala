@@ -1,9 +1,16 @@
 package chapter10
 
-import chapter10.Monoid.{dual, foldMapV}
+import chapter10.Monoid.foldMapV
 import chapter10.exercises.{Exercise01, Exercise02, Exercise03}
 
 object Monoids {
+
+  // We can get the dual of any monoid just by flipping the `op`.
+  def dual[A](m: Monoid[A]): Monoid[A] = new Monoid[A] {
+    def op(x: A, y: A): A = m.op(y, x)
+
+    val zero: A = m.zero
+  }
 
   // Exercise 03
   def endoMonoid[A]: Monoid[A => A] = Exercise03.endoMonoid
