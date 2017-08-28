@@ -5,7 +5,7 @@ package chapter02.exercises
   */
 object Exercise02 {
 
-  def isSorted[A](as: Array[A], firstGreaterThanSecond: (A, A) => Boolean) = {
+  def isSorted[A](as: Array[A], firstGreaterThanSecond: (A, A) => Boolean): Boolean = {
     @annotation.tailrec
     def check(i: Int): Boolean = {
       if (i >= as.length - 1) true

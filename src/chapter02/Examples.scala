@@ -49,7 +49,7 @@ object MyModule {
 
   // We can generalize `formatAbs` and `formatFactorial` to
   // accept a _function_ as a parameter
-  def formatResult(name: String, n: Int, f: Int => Int) = {
+  def formatResult(name: String, n: Int, f: Int => Int): String = {
     val msg = "The %s of %d is %d."
     msg.format(name, n, f(n))
   }
@@ -132,7 +132,15 @@ object PolymorphicFunctions {
 
   // Exercise 2: Implement a polymorphic function to check whether
   // an `Array[A]` is sorted
-  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = Exercise02.isSorted(as, gt)
+  def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean = {
+    @annotation.tailrec
+    def check(i: Int): Boolean = {
+      if (i >= as.length - 1) true
+      else if (gt(as(i), as(i + 1))) false
+      else check(i + 1)
+    }
+    check(0)
+  }
 
   // Polymorphic functions are often so constrained by their type
   // that they only have one implementation! Here's an example:
@@ -140,11 +148,14 @@ object PolymorphicFunctions {
   def partial1[A, B, C](a: A, f: (A, B) => C): B => C =
     (b: B) => f(a, b)
 
-  def curry[A, B, C](f: (A, B) => C): A => (B => C) = Exercise03.curry(f)
+  // Exercise03
+  def curry[A, B, C](f: (A, B) => C): A => (B => C) =
+    a => b => f(a, b)
 
   // NB: The `Function2` trait has a `curried` method already
 
-  def uncurry[A, B, C](f: A => B => C): (A, B) => C = Exercise04.uncurry(f)
+  // Exercise04
+  def uncurry[A, B, C](f: A => B => C): (A, B) => C = (a, b) => f(a)(b)
 
   /*
   NB: There is a method on the `Function` object in the standard library,
@@ -155,6 +166,6 @@ object PolymorphicFunctions {
   we say that they are _isomorphic_ ("iso" = same; "morphe" = shape, form),
   a term we inherit from category theory.
   */
-
-  def compose[A, B, C](f: B => C, g: A => B): A => C = Exercise05.compose(f, g)
+  // Exercise05
+  def compose[A, B, C](f: B => C, g: A => B): A => C = a => f(g(a))
 }
