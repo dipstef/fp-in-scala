@@ -10,7 +10,7 @@ trait Traverse[F[_]] extends Functor[F] with Foldable[F] {
   self =>
 
   def traverse[G[_] : Applicative, A, B](fa: F[A])(f: A => G[B]): G[F[B]] =
-    // Compiles but reported as error IntelliJ
+  // Compiles but reported as error IntelliJ
     sequence(map(fa)(f))
 
   def sequence[G[_] : Applicative, A](fma: F[G[A]]): G[F[A]] = traverse(fma)(identity)
@@ -64,8 +64,8 @@ trait Traverse[F[_]] extends Functor[F] with Foldable[F] {
   // Exercise 19
   def compose[G[_]](implicit G: Traverse[G]): Traverse[({type f[x] = F[G[x]]})#f] =
     new Traverse[({type f[x] = F[G[x]]})#f] {
-      // Compiles but reported as error IntelliJ
-      override def traverse[M[_]:Applicative,A,B](fa: F[G[A]])(f: A => M[B]) =
+      override def traverse[M[_]:Applicative,A,B](fa: F[G[A]])(f: A => M[B]): M[F[G[B]]] =
         self.traverse(fa)((ga: G[A]) => G.traverse(ga)(f))
     }
+
 }

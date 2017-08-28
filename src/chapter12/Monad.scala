@@ -1,8 +1,6 @@
 package chapter12
 
 import chapter06.State
-import chapter11.Monad
-import chapter11.exercises.Exercise02.StateMonads
 
 trait Monad[F[_]] extends Applicative[F] {
 
@@ -19,9 +17,9 @@ trait Monad[F[_]] extends Applicative[F] {
 
 object Monad {
 
-  trait StateMonad[S] extends  Monad[({type lambda[x] = State[S, x]})#lambda] {
+  trait StateMonad[S] extends Monad[({type lambda[x] = State[S, x]})#lambda] {
 
-    def unit[A](a: => A): State[S, A] = State(s => (a, s))
+    override def unit[A](a: => A): State[S, A] = State(s => (a, s))
 
     override def flatMap[A,B](st: State[S, A])(f: A => State[S, B]): State[S, B] = st flatMap f
 
@@ -38,7 +36,8 @@ object Monad {
   }
 
   // Exercise 02
-  def stateMonad[S] = new StateMonads[S]{}
+  def stateMonad[S] = new StateMonad[S]{}
+
   // Exercise 05
   def eitherMonad[E] = new EitherMonad[E]{}
 
