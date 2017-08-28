@@ -5,6 +5,7 @@ import chapter10.exercises.{Exercise01, Exercise02, Exercise03}
 
 object Monoids {
 
+  // Exercise 03
   def endoMonoid[A]: Monoid[A => A] = Exercise03.endoMonoid
 
   def optionMonoid[A]: Monoid[Option[A]] = Exercise02.optionMonoid

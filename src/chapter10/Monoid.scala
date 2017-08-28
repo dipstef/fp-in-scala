@@ -2,7 +2,7 @@ package chapter10
 
 import chapter07.ParNb
 import chapter07.ParNb.Par
-import chapter10.exercises._
+import Monoids.endoMonoid
 
 import language.higherKinds
 
@@ -21,8 +21,6 @@ object Monoid {
 
     val zero: A = m.zero
   }
-
-  def endoMonoid[A]: Monoid[A => A] = Exercise03.endoMonoid
 
   def concatenate[A](as: List[A], m: Monoid[A]): A = as.foldLeft(m.zero)(m.op)
 
