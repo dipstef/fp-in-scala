@@ -9,7 +9,7 @@ import c04_error.{Either, Right}
   */
 object Exercise07 {
 
-  //you can pattern-match the list and use explicit recursion or use `foldRight` to perform the recursion for you.
+  // you can pattern-match the list and use explicit recursion or use `foldRight` to perform the recursion for you.
   def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] =
     es match {
       case Nil => Right(Nil)

@@ -1,7 +1,6 @@
 package c04_error
 
 
-import c04_error.exercises.{Exercise04, Exercise07}
 
 import scala.{Either => _, Left => _, Option => _, Right => _, _}
 
@@ -35,9 +34,17 @@ case class Left[+E](get: E) extends Either[E, Nothing]
 case class Right[+A](get: A) extends Either[Nothing, A]
 
 object Either {
-  def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] = Exercise07.traverse(es)(f)
 
-  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = Exercise07.sequence(es)
+  // Exercise 07
+  def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] =
+    es match {
+      case Nil => Right(Nil)
+      case h :: t => (f(h) map2 traverse(t)(f)) (_ :: _)
+    }
+
+  // Exercise 07
+  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] =
+    traverse(es)(x => x)
 
   def Try[A](a: => A): Either[Exception, A] =
     try Right(a)
