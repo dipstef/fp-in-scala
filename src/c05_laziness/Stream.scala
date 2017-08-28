@@ -196,7 +196,7 @@ object Stream {
     tail
   }
 
-  }
+}
 
 object Streams {
 
