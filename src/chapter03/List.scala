@@ -1,6 +1,10 @@
 package chapter03
 
+import chapter03.exercises.Exercise05.dropWhile
+import chapter03.exercises.Exercise10.foldLeft
 import chapter03.exercises._
+
+import scala.collection.mutable.ListBuffer
 
 sealed trait List[+A]
 
@@ -43,35 +47,91 @@ object List {
       case Cons(x, xs) => f(x, foldRight(xs, z)(f))
     }
 
-  def sum2(ns: List[Int]) =
+  def sum2(ns: List[Int]): Int =
     foldRight(ns, 0)((x, y) => x + y)
 
-  def product2(ns: List[Double]) =
+  def product2(ns: List[Double]): Double =
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
+  // Exercise 02
+  def tail[A](l: List[A]): List[A] = l match {
+    case Nil => Nil
+    case Cons(_, xs) => xs
+  }
 
-  def tail[A](l: List[A]): List[A] = Exercise02.tail(l)
+  // Exercise 03
+  def setHead[A](l: List[A], h: A): List[A] = l match {
+    case Nil => Nil
+    case Cons(_, xs) => Cons(h, xs)
+  }
 
-  def setHead[A](l: List[A], h: A): List[A] = Exercise03.setHead(l, h)
+  // Exercise 04
+  def drop[A](l: List[A], n: Int): List[A] = {
+    if (n == 0) l
+    else l match {
+      case Nil => Nil
+      case Cons(_, xs) => drop(xs, n - 1)
+    }
+  }
 
-  def drop[A](l: List[A], n: Int): List[A] = Exercise04.drop(l, n)
+  // Exercise 05
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
+    case Cons(x, xs) => if (f(x)) dropWhile(xs, f) else l
+    case _ => l
+  }
 
-  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = Exercise05.dropWhile(l, f)
+  // Exercise 06
+  def init[A](l: List[A]): List[A] = {
+    val buf = new ListBuffer[A]
+    @annotation.tailrec
+    def collect(l: List[A]) : List[A] = l match {
+      case Nil => Nil
+      case Cons(_, Nil) => List(buf.toList: _*) // Necessary because we use our own List implementation
+      case Cons(x, xs) =>
+        buf += x
+        collect(xs)
+    }
+    collect(l)
+  }
 
-  def init[A](l: List[A]): List[A] = Exercise06.init(l)
+  // Exercise 09
+  def length[A](l: List[A]): Int = foldRight(l, 0)((_, acc) => acc + 1)
 
-  def length[A](l: List[A]): Int = Exercise09.length(l)
+  // Exercise 10
+  def foldLeft[A, B](l: List[A], z: B)(f: (B, A) => B): B = l match {
+    case Nil => z
+    case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
+  }
 
-  def foldLeft[A, B](l: List[A], z: B)(f: (B, A) => B): B = Exercise10.foldLeft(l, z)(f)
+  // Exercise 18
+  def map[A, B](l: List[A])(f: A => B): List[B] = {
+    val buf = new ListBuffer[B]
+    def go(l: List[A]): Unit = l match {
+      case Nil => ()
+      case Cons(h,t) => buf += f(h); go(t)
+    }
+    go(l)
+    List(buf.toList: _*) // converting from the standard Scala list to the list we've defined here
+  }
 
-  def map[A, B](l: List[A])(f: A => B): List[B] = Exercise18.map(l)(f)
+  // Exercise 12
+  def reverse[A](l: List[A]): List[A] = foldLeft(l, List[A]()){case (acc, x) => Cons(x, acc)}
 
-  def reverse[A](l: List[A]): List[A] = Exercise12.reverse(l)
+  // Exercise 19
+  def filter[A](l: List[A])(f: A => Boolean): List[A] = {
+    val buf = new ListBuffer[A]
+    def go(l: List[A]): Unit = l match {
+      case Nil => ()
+      case Cons(h, t) => if (f(h)) buf += h; go(t)
+    }
+    go(l)
+    List(buf.toList: _*) // converting from the standard Scala list to the list we've defined here
+  }
 
-  def filter[A](l: List[A])(f: A => Boolean): List[A] = Exercise19.filter(l)(f)
+  // Exercise 15
+  def concat[A](l: List[List[A]]): List[A] = foldRight(l, Nil: List[A])(append)
 
-  def concat[A](l: List[List[A]]): List[A] = Exercise15.concat(l)
-
-  def flatMap[A, B](l: List[A])(f: A => List[B]): List[B] = Exercise20.flatMap(l)(f)
+  // Exercise 20
+  def flatMap[A, B](l: List[A])(f: A => List[B]): List[B] = concat(map(l)(f))
 
 }

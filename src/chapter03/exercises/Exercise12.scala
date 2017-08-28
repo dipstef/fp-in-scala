@@ -10,7 +10,6 @@ import chapter03.List.foldLeft
   */
 object Exercise12 {
 
-
-  def reverse[A](l: List[A]): List[A] = foldLeft(l, List[A]())((acc, x) => Cons(x, acc))
+  def reverse[A](l: List[A]): List[A] = foldLeft(l, List[A]()){case (acc, x) => Cons(x, acc)}
 
 }

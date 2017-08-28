@@ -7,7 +7,7 @@ import chapter03.{Cons, List, Nil}
   */
 object Exercise03 {
 
-  def setHead[A](l: List[A], head: A) = l match {
+  def setHead[A](l: List[A], head: A): List[A] = l match {
     case Nil => Nil
     case Cons(_, xs) => Cons(head, xs)
   }
