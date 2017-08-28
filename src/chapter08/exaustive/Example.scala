@@ -10,9 +10,10 @@ import chapter08.exaustive.PropParallel._
 
 import scala.language.{implicitConversions, postfixOps}
 
-object Example {
+object Example extends App {
 
   val ES: ExecutorService = Executors.newCachedThreadPool
+
   val p1 = Prop.forAll(Gen.unit(Par.unit(1)))(i =>
     Par.map(i)(_ + 1)(ES).get == Par.unit(2)(ES).get)
 

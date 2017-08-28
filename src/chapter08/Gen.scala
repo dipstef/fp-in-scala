@@ -1,7 +1,6 @@
 package chapter08
 
 import chapter06.{RNG, State}
-import chapter08.exercises._
 
 case class Gen[+A](sample: State[RNG, A]) {
 
@@ -29,21 +28,34 @@ case class Gen[+A](sample: State[RNG, A]) {
 }
 
 object Gen {
-  def unit[A](a: => A): Gen[A] = Exercise05.unit(a)
 
-  def boolean: Gen[Boolean] = Exercise05.boolean
+  // Exercise 05
+  def unit[A](a: => A): Gen[A] = Gen(State.unit(a))
+  // Exercise05
+  def boolean: Gen[Boolean] = Gen(State(RNG.boolean))
+  // Exercise 05
+  def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] = Gen(State.sequence(List.fill(n)(g.sample)))
 
-  def choose(start: Int, stopExclusive: Int): Gen[Int] = Exercise04.choose(start, stopExclusive)
+  // Exercise 04
+  def choose(start: Int, stopExclusive: Int): Gen[Int] =
+    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive - start)))
 
-  def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] = Exercise05.listOfN(n, g)
+  // Exercise 07
+  def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] = boolean.flatMap(b => if (b) g1 else g2)
 
-  def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] = Exercise07.union(g1, g2)
+  // Exercise 08
+  def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)): Gen[A] = {
+    /* The probability we should pull from `g1`. */
+    val g1Threshold = g1._2.abs / (g1._2.abs + g2._2.abs)
 
-  def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)) = Exercise08.weighted(g1, g2)
+    Gen(State(RNG.double).flatMap(d => if (d < g1Threshold) g1._1.sample else g2._1.sample))
+  }
 
-  def listOf[A](g: Gen[A]): SGen[List[A]] = Exercise12.listOf(g)
+  // Exercise 12
+  def listOf[A](g: Gen[A]): SGen[List[A]] = SGen(n => g.listOfN(n))
 
-  def listOf1[A](g: Gen[A]) = Exercise13.listOf1(g)
+  // Exercise 13
+  def listOf1[A](g: Gen[A]): SGen[List[A]] = SGen(n => g.listOfN(n max 1))
 
   object ** {
     def unapply[A, B](p: (A, B)) = Some(p)

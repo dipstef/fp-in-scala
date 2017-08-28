@@ -15,19 +15,19 @@ import chapter08.exaustive.Gen._
 import chapter08.exaustive.Prop._
 
 
-
 /*
 The `Gen` type now has a random generator as well as an exhaustive stream.
 Infinite domains will simply generate infinite streams of None.
 A finite domain is exhausted when the stream reaches empty.
 */
-case class Gen[+A](sample: State[RNG,A], exhaustive: Stream[Option[A]]) {
+case class Gen[+A](sample: State[RNG, A], exhaustive: Stream[Option[A]]) {
+
   def map[B](f: A => B): Gen[B] =
     Gen(sample.map(f), exhaustive.map(_.map(f)))
 
-  def map2[B,C](g: Gen[B])(f: (A,B) => C): Gen[C] =
+  def map2[B, C](g: Gen[B])(f: (A, B) => C): Gen[C] =
     Gen(sample.map2(g.sample)(f),
-      map2Stream(exhaustive,g.exhaustive)(map2Option(_,_)(f)))
+      map2Stream(exhaustive, g.exhaustive)(map2Option(_, _)(f)))
 
   def flatMap[B](f: A => Gen[B]): Gen[B] =
     Gen(sample.flatMap(a => f(a).sample),
@@ -45,29 +45,31 @@ case class Gen[+A](sample: State[RNG,A], exhaustive: Stream[Option[A]]) {
     size flatMap (n => this.listOfN(n))
 
   def listOf: SGen[List[A]] = Gen.listOf(this)
+
   def listOf1: SGen[List[A]] = Gen.listOf1(this)
 
   def unsized = Unsized(this)
 
-  def **[B](g: Gen[B]): Gen[(A,B)] =
-    (this map2 g)((_,_))
+  def **[B](g: Gen[B]): Gen[(A, B)] =
+    (this map2 g) ((_, _))
 }
 
 object Gen {
   type Domain[+A] = Stream[Option[A]]
 
   def bounded[A](a: Stream[A]): Domain[A] = a map (Some(_))
+
   def unbounded: Domain[Nothing] = Stream(None)
 
   def unit[A](a: => A): Gen[A] =
     Gen(State.unit(a), bounded(Stream(a)))
 
   def boolean: Gen[Boolean] =
-    Gen(State(RNG.boolean), bounded(Stream(true,false)))
+    Gen(State(RNG.boolean), bounded(Stream(true, false)))
 
   def choose(start: Int, stopExclusive: Int): Gen[Int] =
-    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive-start)),
-      bounded(Stream.from(start).take(stopExclusive-start)))
+    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive - start)),
+      bounded(Stream.from(start).take(stopExclusive - start)))
 
   /* This implementation is rather tricky, but almost impossible to get wrong
    * if you follow the types. It relies on several helper functions (see below).
@@ -83,18 +85,18 @@ object Gen {
    *    Stream(Stream(1,3,4), Stream(1,3,5), Stream(2,3,4), Stream(2,3,5))
   */
   def cartesian[A](s: Stream[Stream[A]]): Stream[Stream[A]] =
-    s.foldRight(Stream(Stream[A]()))((hs,ts) => map2Stream(hs,ts)(Stream.cons(_,_)))
+    s.foldRight(Stream(Stream[A]()))((hs, ts) => map2Stream(hs, ts)(Stream.cons(_, _)))
 
   /* `map2Option` and `map2Stream`. Notice the duplication! */
-  def map2Option[A,B,C](oa: Option[A], ob: Option[B])(f: (A,B) => C): Option[C] =
-    for { a <- oa; b <- ob } yield f(a,b)
+  def map2Option[A, B, C](oa: Option[A], ob: Option[B])(f: (A, B) => C): Option[C] =
+    for {a <- oa; b <- ob} yield f(a, b)
 
   /* This is not the same as `zipWith`, a function we've implemented before.
    * We are generating all (A,B) combinations and using each to produce a `C`.
    * This implementation desugars to sa.flatMap(a => sb.map(b => f(a,b))).
    */
-  def map2Stream[A,B,C](sa: Stream[A], sb: => Stream[B])(f: (A,=>B) => C): Stream[C] =
-    for { a <- sa; b <- sb } yield f(a,b)
+  def map2Stream[A, B, C](sa: Stream[A], sb: => Stream[B])(f: (A, => B) => C): Stream[C] =
+    for {a <- sa; b <- sb} yield f(a, b)
 
   /* This is a function we've implemented before. Unfortunately, it does not
    * exist in the standard library. This implementation is uses a foldLeft,
@@ -103,7 +105,7 @@ object Gen {
    */
   def sequenceOption[A](o: List[Option[A]]): Option[List[A]] =
     o.foldLeft[Option[List[A]]](Some(List()))(
-      (t,h) => map2Option(h,t)(_ :: _)).map(_.reverse)
+      (t, h) => map2Option(h, t)(_ :: _)).map(_.reverse)
 
   /* Notice we are using the `unbounded` definition here, which is just
    * `Stream(None)` in our current representation of `exhaustive`.
@@ -112,27 +114,27 @@ object Gen {
     Gen(State(RNG.double), unbounded)
 
   def choose(i: Double, j: Double): Gen[Double] =
-    Gen(State(RNG.double).map(d => i + d*(j-i)), unbounded)
+    Gen(State(RNG.double).map(d => i + d * (j - i)), unbounded)
 
   /* Basic idea is add 1 to the result of `choose` if it is of the wrong
    * parity, but we require some special handling to deal with the maximum
    * integer in the range.
    */
   def even(start: Int, stopExclusive: Int): Gen[Int] =
-    choose(start, if (stopExclusive%2 == 0) stopExclusive - 1 else stopExclusive).
-      map (n => if (n%2 != 0) n+1 else n)
+    choose(start, if (stopExclusive % 2 == 0) stopExclusive - 1 else stopExclusive).
+      map(n => if (n % 2 != 0) n + 1 else n)
 
   def odd(start: Int, stopExclusive: Int): Gen[Int] =
-    choose(start, if (stopExclusive%2 != 0) stopExclusive - 1 else stopExclusive).
-      map (n => if (n%2 == 0) n+1 else n)
+    choose(start, if (stopExclusive % 2 != 0) stopExclusive - 1 else stopExclusive).
+      map(n => if (n % 2 == 0) n + 1 else n)
 
-  def sameParity(from: Int, to: Int): Gen[(Int,Int)] = for {
-    i <- choose(from,to)
-    j <- if (i%2 == 0) even(from,to) else odd(from,to)
-  } yield (i,j)
+  def sameParity(from: Int, to: Int): Gen[(Int, Int)] = for {
+    i <- choose(from, to)
+    j <- if (i % 2 == 0) even(from, to) else odd(from, to)
+  } yield (i, j)
 
   def listOfN_1[A](n: Int, g: Gen[A]): Gen[List[A]] =
-    List.fill(n)(g).foldRight(unit(List[A]()))((a,b) => a.map2(b)(_ :: _))
+    List.fill(n)(g).foldRight(unit(List[A]()))((a, b) => a.map2(b)(_ :: _))
 
   /* The simplest possible implementation. This will put all elements of one
    * `Gen` before the other in the exhaustive traversal. It might be nice to
@@ -149,13 +151,13 @@ object Gen {
     )
 
   def interleave[A](s1: Stream[A], s2: Stream[A]): Stream[A] =
-    s1.zipAll(s2).flatMap { case (a,a2) => Stream(a.toList ++ a2.toList: _*) }
+    s1.zipAll(s2).flatMap { case (a, a2) => Stream(a.toList ++ a2.toList: _*) }
 
   /* The random case is simple - we generate a double and use this to choose between
    * the two random samplers. The exhaustive case is trickier if we want to try
    * to produce a stream that does a weighted interleave of the two exhaustive streams.
    */
-  def weighted[A](g1: (Gen[A],Double), g2: (Gen[A],Double)): Gen[A] = {
+  def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)): Gen[A] = {
     /* The probability we should pull from `g1`. */
     val g1Threshold = g1._2.abs / (g1._2.abs + g2._2.abs)
 
@@ -196,36 +198,22 @@ object Gen {
    * This generates ASCII strings.
    */
   def stringN(n: Int): Gen[String] =
-    listOfN(n, choose(0,127)).map(_.map(_.toChar).mkString)
+    listOfN(n, choose(0, 127)).map(_.map(_.toChar).mkString)
 
   def string: SGen[String] = Sized(stringN)
 
   case class Sized[+A](forSize: Int => Gen[A]) extends SGen[A]
+
   case class Unsized[+A](get: Gen[A]) extends SGen[A]
 
   implicit def unsized[A](g: Gen[A]): SGen[A] = Unsized(g)
 
-  val smallInt = Gen.choose(-10,10)
-  val maxProp = forAll(listOf(smallInt)) { l =>
-    val max = l.max
-    !l.exists(_ > max) // No value greater than `max` should exist in `l`
-  }
-
   def listOf1[A](g: Gen[A]): SGen[List[A]] =
     Sized(n => g.listOfN(n max 1))
 
-  val maxProp1 = forAll(listOf1(smallInt)) { l =>
-    val max = l.max
-    !l.exists(_ > max) // No value greater than `max` should exist in `l`
-  }
-
-  val sortedProp = forAll(listOf(smallInt)) { l =>
-    val ls = l.sorted
-    l.isEmpty || ls.tail.isEmpty || !l.zip(ls.tail).exists { case (a,b) => a > b }
-  }
 
   object ** {
-    def unapply[A,B](p: (A,B)) = Some(p)
+    def unapply[A, B](p: (A, B)) = Some(p)
   }
 
 
@@ -234,3 +222,22 @@ object Gen {
 }
 
 
+object Values {
+
+  val smallInt: Gen[MaxSize] = Gen.choose(-10, 10)
+  val maxProp: Prop = forAll(listOf(smallInt)) { l =>
+    val max = l.max
+    !l.exists(_ > max) // No value greater than `max` should exist in `l`
+  }
+
+
+  val maxProp1: Prop = forAll(listOf1(smallInt)) { l =>
+    val max = l.max
+    !l.exists(_ > max) // No value greater than `max` should exist in `l`
+  }
+
+  val sortedProp: Prop = forAll(listOf(smallInt)) { l =>
+    val ls = l.sorted
+    l.isEmpty || ls.tail.isEmpty || !l.zip(ls.tail).exists { case (a, b) => a > b }
+  }
+}
