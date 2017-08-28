@@ -1,8 +1,6 @@
 package chapter05
 
-
 import Stream._
-import chapter05.exercises.{Exercise09, Exercise11, Exercise12}
 
 trait Stream[+A] {
 
@@ -168,10 +166,11 @@ object Stream {
     if (as.isEmpty) empty
     else cons(as.head, apply(as.tail: _*))
 
-  def from(n: Int): Stream[Int] = Exercise09.from(n)
+  // Exercise 09
+  def from(n: Int): Stream[Int] = cons(n, from(n+1))
 
-  def from_(n: Int): Stream[Int] = Exercise12.from(n)
-
+  // Exercise 12
+  def from_(n: Int): Stream[Int] = unfold(n)(n => Some((n, n + 1)))
 
   /*
     The unfold function is an example of what’s sometimes called a corecursive function.
@@ -183,17 +182,27 @@ object Stream {
     The unfold function is productive as long as f terminates, since we just need to run the function f one more time
     to generate the next element of the Stream.
 
-    Corecursion is also sometimes called guarded recursion, and productivity is also sometimes called cotermination.
+    Co-recursion is also sometimes called guarded recursion, and productivity is also sometimes called co-termination.
    */
-  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = Exercise11.unfold(z)(f)
+  // Exercise 11
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = f(z) match {
+    case Some((h,s)) => cons(h, unfold(s)(f))
+    case None => empty
+  }
 
+  // Exercise 08
+  def constant[A](a: A): Stream[A] = {
+    lazy val tail: Stream[A] = Cons(() => a, () => tail)
+    tail
+  }
 
-}
+  }
 
 object Streams {
 
   val ones: Stream[Int] = Stream.cons(1, ones)
 
-  val fibs: Stream[Int] = Exercise12.fibs
+  // Exercise 12
+  val fibs: Stream[Int] = unfold((0, 1)) { case (f0, f1) => Some((f0, (f1, f0 + f1))) }
 
 }

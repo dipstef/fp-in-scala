@@ -9,7 +9,6 @@ import chapter05.Stream.cons
   */
 object Exercise09 {
 
-  def from(n: Int): Stream[Int] =
-    cons(n, from(n+1))
+  def from(n: Int): Stream[Int] = cons(n, from(n+1))
 
 }
