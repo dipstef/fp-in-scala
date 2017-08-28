@@ -1,6 +1,5 @@
 package chapter02
 
-import chapter02.exercises._
 
 // A comment!
 /* Another comment */
@@ -39,7 +38,15 @@ object MyModule {
     acc
   }
 
-  def fib(n: Int): Int = Exercise01.fib(n)
+  // Exercise 01
+  def fib(n: Int): Int = {
+    @annotation.tailrec
+    def acc(n: Int, prev: Int, cur: Int): Int = {
+      if (n == 0) prev
+      else acc(n - 1, cur, prev + cur)
+    }
+    acc(n, 0, 1)
+  }
 
   // This definition and `formatAbs` are very similar..
   private def formatFactorial(n: Int) = {
