@@ -7,12 +7,11 @@ import chapter06.RNG.{Rand, Simple, map, nonNegativeInt}
   */
 object Exercise05 {
 
-  def double: Rand[Double] = {
-    map(nonNegativeInt)(i => i / (Integer.MAX_VALUE.toDouble + 1))
-  }
+  def double: Rand[Double] = map(nonNegativeInt)(i => i / (Integer.MAX_VALUE.toDouble + 1))
+
 
   def main(args: Array[String]) {
-    val rng = new Simple(123)
+    val rng = Simple(123)
 
     println("rng.double = " + double(rng))
   }

@@ -52,10 +52,7 @@ import State._
 // State is short for computation that carries some state along, or state action, state transition, or even statement
 case class State[S, +A](run: S => (A, S)) {
 
-  /**
-    * From Exercise 10:
-    */
-
+  // Exercise 10
   def map[B](f: A => B): State[S, B] = flatMap(a => unit(f(a)))
 
   def map2[B, C](sb: State[S, B])(f: (A, B) => C): State[S, C] = flatMap(a => sb.map(b => f(a, b)))

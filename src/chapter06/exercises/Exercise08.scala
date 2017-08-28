@@ -38,12 +38,12 @@ object Exercise08 {
     }
   }
 
-  def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = {
+  def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] =
     rng => {
       val (a, rng1) = f(rng)
       g(a)(rng1)
     }
-  }
+
 
   def nonNegativeLessThan(n: Int): Rand[Int] = {
     flatMap(nonNegativeInt) { i =>
@@ -53,7 +53,7 @@ object Exercise08 {
   }
 
   def main(args: Array[String]) {
-    println("flatMap example: " + flatMap(nonNegativeInt){ i => unit(i)}(new Simple(123)))
+    println("flatMap example: " + flatMap(nonNegativeInt){ i => unit(i)}(Simple(123)))
 
     for( i <- 1 to 10) {
       println("nonNegativeLessThan(10)(rng) = " + nonNegativeLessThan(10)(Simple(i)))
