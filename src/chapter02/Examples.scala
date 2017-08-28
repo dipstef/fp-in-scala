@@ -155,13 +155,13 @@ object PolymorphicFunctions {
   def partial1[A, B, C](a: A, f: (A, B) => C): B => C =
     (b: B) => f(a, b)
 
-  // Exercise03
+  // Exercise 03
   def curry[A, B, C](f: (A, B) => C): A => (B => C) =
     a => b => f(a, b)
 
   // NB: The `Function2` trait has a `curried` method already
 
-  // Exercise04
+  // Exercise 04
   def uncurry[A, B, C](f: A => B => C): (A, B) => C = (a, b) => f(a)(b)
 
   /*
@@ -173,6 +173,6 @@ object PolymorphicFunctions {
   we say that they are _isomorphic_ ("iso" = same; "morphe" = shape, form),
   a term we inherit from category theory.
   */
-  // Exercise05
+  // Exercise 05
   def compose[A, B, C](f: B => C, g: A => B): A => C = a => f(g(a))
 }
