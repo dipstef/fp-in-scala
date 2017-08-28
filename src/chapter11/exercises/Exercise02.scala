@@ -30,7 +30,7 @@ object Exercise02 {
   }
   // But we don't have to create a full class like `StateMonads`. We can create an anonymous class inline, inside
   // parentheses, and project out its type member, `lambda`:
-  def stateMonad[S] = new Monad[({type lambda[x] = State[S, x]})#lambda] {
+  trait StateMonad[S] extends  Monad[({type lambda[x] = State[S, x]})#lambda] {
 
     def unit[A](a: => A): State[S, A] = State(s => (a, s))
 
@@ -38,5 +38,6 @@ object Exercise02 {
 
   }
 
+  def stateMonad[S] = new StateMonads[S]{}
 
 }
