@@ -1,7 +1,7 @@
 package chapter04.exercises
 
 import chapter04.Option
-import chapter04.Functions.mean
+import chapter04.Options.mean
 
 /**
   * Implement the variance function in terms of flatMap.

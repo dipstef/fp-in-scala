@@ -1,13 +1,6 @@
 package chapter04
 
 
-import chapter04.exercises.{Exercise02, Exercise03, Exercise05}
-
-import scala.{Either => _, Option => _, Some => _, _}
-
-// hide std library `Option`, `Some` and `Either`, since we are writing our own in this chapter
-
-
 sealed trait Option[+A] {
 
   def map[B](f: A => B): Option[B] = this match {
@@ -45,20 +38,28 @@ case object None extends Option[Nothing]
 
 object Option {
 
-  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = Exercise03.map2(a, b)(f)
+  // Exercise 03
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
+    a flatMap (aa => b map (bb => f(aa, bb)))
 
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = Exercise05.sequence(a)
+  // Exercise 05
+  def sequence[A](a: List[Option[A]]): Option[List[A]] =
+    traverse(a)(x => x)
 
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = Exercise05.traverse(a)(f)
+  // Exercise 05
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] =
+    a.foldRight[Option[List[B]]](Some(Nil))((h, t) => map2(f(h), t)(_ :: _))
 
 }
 
-object Functions {
+object Options {
 
   def mean(xs: Seq[Double]): Option[Double] =
     if (xs.isEmpty) None
     else Some(xs.sum / xs.length)
 
-  def variance(xs: Seq[Double]): Option[Double] = Exercise02.variance(xs)
+  // Exercise 02
+  def variance(xs: Seq[Double]): Option[Double] =
+    mean(xs) flatMap (m => mean(xs.map(x => math.pow(x - m, 2))))
 
 }

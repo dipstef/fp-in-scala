@@ -1,6 +1,6 @@
 package chapter04.exercises
 
-import chapter04.{Option,Some}
+import chapter04.{Option, Some}
 import chapter04.Option.map2
 
 /**
